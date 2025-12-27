@@ -1,11 +1,36 @@
+'use client'
+
+export const dynamic = 'force-dynamic'
+
+import { useState, useEffect, Suspense } from 'react'
 import { getClienti } from '@/app/actions/clienti'
 import ClientiList from './components/ClientiList'
 import ClienteForm from './components/ClienteForm'
 import ClientiSearch from './components/ClientiSearch'
 
-export default async function ClientiPage() {
-  const result = await getClienti()
-  const clienti = result.success ? result.data : []
+type Cliente = {
+  id: number
+  nome: string
+  cognome: string
+  cellulare: string | null
+  note: string | null
+  appuntamenti?: any[]
+  interventi?: any[]
+}
+
+export default function ClientiPage() {
+  const [clienti, setClienti] = useState<Cliente[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadClienti() {
+      setLoading(true)
+      const result = await getClienti()
+      setClienti(result.success ? result.data : [])
+      setLoading(false)
+    }
+    loadClienti()
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -22,10 +47,18 @@ export default async function ClientiPage() {
         <ClienteForm />
 
         {/* Barra di ricerca */}
-        <ClientiSearch />
+        <Suspense fallback={<div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">Caricamento...</div>}>
+          <ClientiSearch />
+        </Suspense>
 
         {/* Lista clienti */}
-        <ClientiList clienti={clienti || []} />
+        {loading ? (
+          <div className="bg-white rounded-lg shadow p-8 text-center">
+            <p className="text-gray-500">Caricamento...</p>
+          </div>
+        ) : (
+          <ClientiList clienti={clienti || []} />
+        )}
       </div>
     </div>
   )
