@@ -11,7 +11,13 @@
       "Bash(ls:*)",
       "Bash(npx prisma migrate:*)",
       "Bash(sqlite3:*)",
-      "Bash(node -e:*)"
+      "Bash(node -e:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nFix /clienti Suspense boundary error for Vercel build\n\n- Convert /clienti page to client-side component with ''use client''\n- Add export const dynamic = ''force-dynamic'' to disable prerender\n- Wrap ClientiSearch in Suspense boundary to fix useSearchParams\\(\\) error\n- Load data client-side using useEffect + useState\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push)",
+      "Bash(npm install:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nRun prisma generate on Vercel\n\n- Add postinstall script to run prisma generate after npm install\n- Update build script to run prisma generate before next build\n- Add prisma script for direct CLI access\n\nThis fixes PrismaClientInitializationError on Vercel deployment\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }
