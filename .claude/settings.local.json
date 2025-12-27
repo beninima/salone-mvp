@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(node --version:*)",
+      "Bash(npm run dev:*)",
+      "Bash(export NVM_DIR=\"$HOME/.nvm\")",
+      "Bash([ -s \"$NVM_DIR/nvm.sh\" ])",
+      "Bash(. \"$NVM_DIR/nvm.sh\")",
+      "Bash(nvm use:*)",
+      "Bash(ls:*)",
+      "Bash(npx prisma migrate:*)",
+      "Bash(sqlite3:*)",
+      "Bash(node -e:*)"
+    ]
+  }
+}

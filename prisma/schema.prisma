@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Cliente {
+  id            Int            @id @default(autoincrement())
+  nome          String
+  cognome       String
+  cellulare     String?
+  note          String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Relazioni
+  appuntamenti  Appuntamento[]
+  interventi    Intervento[]
+}
+
+model Appuntamento {
+  id        Int      @id @default(autoincrement())
+  clienteId Int
+  dataOra   DateTime
+  servizio  String
+  durata    Int      // durata in minuti
+  stato     String   @default("confermato") // confermato, completato, cancellato
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relazioni
+  cliente   Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+}
+
+model Intervento {
+  id          Int      @id @default(autoincrement())
+  clienteId   Int
+  data        DateTime @default(now())
+  descrizione String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relazioni
+  cliente   Cliente              @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  prodotti  InterventoProdotto[]
+}
+
+model Prodotto {
+  id          Int      @id @default(autoincrement())
+  nome        String
+  descrizione String?
+  prezzo      Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relazioni
+  interventi  InterventoProdotto[]
+}
+
+model InterventoProdotto {
+  interventoId Int
+  prodottoId   Int
+  quantita     Int       @default(1)
+  createdAt    DateTime  @default(now())
+
+  // Relazioni
+  intervento   Intervento @relation(fields: [interventoId], references: [id], onDelete: Cascade)
+  prodotto     Prodotto   @relation(fields: [prodottoId], references: [id], onDelete: Cascade)
+
+  @@id([interventoId, prodottoId])
+}

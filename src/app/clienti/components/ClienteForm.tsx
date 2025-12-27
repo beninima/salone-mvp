@@ -1,0 +1,108 @@
+'use client'
+
+import { useState } from 'react'
+import { createCliente } from '@/app/actions/clienti'
+
+export default function ClienteForm() {
+  const [isOpen, setIsOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setLoading(true)
+
+    const formData = new FormData(e.currentTarget)
+    const result = await createCliente(formData)
+
+    setLoading(false)
+
+    if (result.success) {
+      setIsOpen(false)
+      e.currentTarget.reset()
+    } else {
+      alert(result.error)
+    }
+  }
+
+  if (!isOpen) {
+    return (
+      <button
+        onClick={() => setIsOpen(true)}
+        className="w-full px-4 py-3 bg-green-600 text-white rounded-lg font-semibold text-lg hover:bg-green-700"
+      >
+        + Aggiungi Cliente
+      </button>
+    )
+  }
+
+  return (
+    <div className="bg-white rounded-lg shadow p-4">
+      <h2 className="text-lg font-semibold mb-4">Nuovo Cliente</h2>
+
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Nome *
+          </label>
+          <input
+            type="text"
+            name="nome"
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Cognome *
+          </label>
+          <input
+            type="text"
+            name="cognome"
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Cellulare
+          </label>
+          <input
+            type="tel"
+            name="cellulare"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Note
+          </label>
+          <textarea
+            name="note"
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        <div className="flex gap-2 pt-2">
+          <button
+            type="button"
+            onClick={() => setIsOpen(false)}
+            className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300"
+          >
+            Annulla
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
+          >
+            {loading ? 'Salvataggio...' : 'Salva'}
+          </button>
+        </div>
+      </form>
+    </div>
+  )
+}
