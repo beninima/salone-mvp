@@ -25,12 +25,7 @@ export default async function AppuntamentiPage({
   const clienti = clientiResult.success ? clientiResult.data : []
 
   // Per la vista settimanale, ottieni le date di inizio e fine settimana
-  const weekData = view === 'week' && appuntamentiResult.success
-    ? {
-        startOfWeek: appuntamentiResult.startOfWeek,
-        endOfWeek: appuntamentiResult.endOfWeek
-      }
-    : null
+  const weekData = null
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
