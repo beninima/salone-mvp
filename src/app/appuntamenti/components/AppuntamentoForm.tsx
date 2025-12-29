@@ -10,6 +10,13 @@ type Cliente = {
   cognome: string
 }
 
+type Operatore = {
+  id: string
+  nome: string
+  cognome: string
+  colore: string | null
+}
+
 const SERVIZI = [
   'Taglio',
   'Piega',
@@ -23,9 +30,11 @@ const SERVIZI = [
 
 export default function AppuntamentoForm({
   clienti,
+  operatori,
   selectedDate
 }: {
   clienti: Cliente[]
+  operatori: Operatore[]
   selectedDate: string
 }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -79,6 +88,24 @@ export default function AppuntamentoForm({
             {clienti.map((cliente) => (
               <option key={cliente.id} value={cliente.id}>
                 {cliente.cognome} {cliente.nome}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Operatore *
+          </label>
+          <select
+            name="operatoreId"
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">Seleziona operatore</option>
+            {operatori.map((operatore) => (
+              <option key={operatore.id} value={operatore.id}>
+                {operatore.cognome} {operatore.nome}
               </option>
             ))}
           </select>

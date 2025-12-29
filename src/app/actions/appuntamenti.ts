@@ -19,7 +19,8 @@ export async function getAppuntamentiByDate(date: string) {
         }
       },
       include: {
-        cliente: true
+        cliente: true,
+        operatore: true
       },
       orderBy: { dataOra: 'asc' }
     })
@@ -30,23 +31,95 @@ export async function getAppuntamentiByDate(date: string) {
   }
 }
 
+/**
+ * Check if an operator has overlapping appointments
+ */
+async function hasOverlappingAppointment(
+  operatoreId: string,
+  dataOra: Date,
+  durata: number,
+  excludeAppuntamentoId?: number
+): Promise<{ hasConflict: boolean; conflictDetails?: string }> {
+  const endTime = new Date(dataOra.getTime() + durata * 60000)
+
+  const conflictingAppointments = await prisma.appuntamento.findMany({
+    where: {
+      operatoreId,
+      id: excludeAppuntamentoId ? { not: excludeAppuntamentoId } : undefined,
+      AND: [
+        {
+          dataOra: {
+            lt: endTime
+          }
+        },
+        {
+          OR: [
+            {
+              dataOra: {
+                gte: dataOra
+              }
+            },
+            {
+              // Check if existing appointment end time overlaps with new appointment start
+              AND: [
+                {
+                  dataOra: {
+                    lt: dataOra
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    include: {
+      cliente: true
+    }
+  })
+
+  // More precise overlap check
+  for (const existing of conflictingAppointments) {
+    const existingEnd = new Date(existing.dataOra.getTime() + existing.durata * 60000)
+    
+    // Check if there's actual overlap
+    if (dataOra < existingEnd && endTime > existing.dataOra) {
+      const timeStr = existing.dataOra.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
+      return {
+        hasConflict: true,
+        conflictDetails: `L'operatore ha già un appuntamento con ${existing.cliente.nome} ${existing.cliente.cognome} alle ${timeStr}`
+      }
+    }
+  }
+
+  return { hasConflict: false }
+}
+
 export async function createAppuntamento(formData: FormData) {
   try {
     const clienteId = parseInt(formData.get('clienteId') as string)
+    const operatoreId = formData.get('operatoreId') as string
     const data = formData.get('data') as string
     const ora = formData.get('ora') as string
     const servizio = formData.get('servizio') as string
     const durata = parseInt(formData.get('durata') as string)
 
-    if (!clienteId || !data || !ora || !servizio || !durata) {
+    if (!clienteId || !operatoreId || !data || !ora || !servizio || !durata) {
       return { success: false, error: 'Tutti i campi sono obbligatori' }
     }
 
     const dataOra = new Date(`${data}T${ora}`)
 
+    // Check for overlapping appointments for this operator
+    const overlap = await hasOverlappingAppointment(operatoreId, dataOra, durata)
+    if (overlap.hasConflict) {
+      return { success: false, error: overlap.conflictDetails || 'L\'operatore ha già un appuntamento in questo orario' }
+    }
+
     await prisma.appuntamento.create({
       data: {
         clienteId,
+        operatoreId,
         dataOra,
         servizio,
         durata,
@@ -57,6 +130,7 @@ export async function createAppuntamento(formData: FormData) {
     revalidatePath('/appuntamenti')
     return { success: true }
   } catch (error) {
+    console.error('Errore createAppuntamento:', error)
     return { success: false, error: 'Errore nella creazione dell\'appuntamento' }
   }
 }
@@ -112,7 +186,8 @@ export async function getAppuntamentiByWeek(date: string) {
         }
       },
       include: {
-        cliente: true
+        cliente: true,
+        operatore: true
       },
       orderBy: { dataOra: 'asc' }
     })
@@ -120,6 +195,48 @@ export async function getAppuntamentiByWeek(date: string) {
     return { success: true, data: appuntamenti, startOfWeek, endOfWeek }
   } catch (error) {
     return { success: false, error: 'Errore nel recupero degli appuntamenti settimanali' }
+  }
+}
+
+/**
+ * Get appointments grouped by operator for a specific date range
+ */
+export async function getAppuntamentiByOperatoreAndDateRange(startDate: Date, endDate: Date) {
+  try {
+    const appuntamenti = await prisma.appuntamento.findMany({
+      where: {
+        dataOra: {
+          gte: startDate,
+          lte: endDate
+        }
+      },
+      include: {
+        cliente: true,
+        operatore: true
+      },
+      orderBy: [
+        { operatoreId: 'asc' },
+        { dataOra: 'asc' }
+      ]
+    })
+
+    // Group by operator
+    const grouped = appuntamenti.reduce((acc, app) => {
+      const operatoreId = app.operatoreId
+      if (!acc[operatoreId]) {
+        acc[operatoreId] = {
+          operatore: app.operatore,
+          appuntamenti: []
+        }
+      }
+      acc[operatoreId].appuntamenti.push(app)
+      return acc
+    }, {} as Record<string, { operatore: any; appuntamenti: any[] }>)
+
+    return { success: true, data: grouped }
+  } catch (error) {
+    console.error('Errore getAppuntamentiByOperatore:', error)
+    return { success: false, error: 'Errore nel recupero degli appuntamenti per operatore' }
   }
 }
 

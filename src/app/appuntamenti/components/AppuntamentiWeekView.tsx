@@ -4,6 +4,13 @@ import { useState, useMemo } from 'react'
 import { deleteAppuntamento, updateAppuntamentoStato } from '@/app/actions/appuntamenti'
 import { useRouter } from 'next/navigation'
 
+type Operatore = {
+  id: string
+  nome: string
+  cognome: string
+  colore: string | null
+}
+
 type Appuntamento = {
   id: number
   dataOra: Date
@@ -15,6 +22,7 @@ type Appuntamento = {
     nome: string
     cognome: string
   }
+  operatore: Operatore
 }
 
 type WeekData = {
@@ -24,9 +32,11 @@ type WeekData = {
 
 export default function AppuntamentiWeekView({
   appuntamenti,
+  operatori,
   weekData
 }: {
   appuntamenti: Appuntamento[]
+  operatori: Operatore[]
   weekData: WeekData
 }) {
   const [actioningId, setActioningId] = useState<number | null>(null)
@@ -35,10 +45,15 @@ export default function AppuntamentiWeekView({
 
   // Genera i 7 giorni della settimana (Lun-Dom)
   const weekDays = useMemo(() => {
-    if (!weekData) return []
-
     const days = []
-    const start = new Date(weekData.startOfWeek)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    // Trova il lunedì della settimana
+    const dayOfWeek = today.getDay()
+    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
+    const start = new Date(today)
+    start.setDate(today.getDate() + diff)
 
     for (let i = 0; i < 7; i++) {
       const day = new Date(start)
@@ -47,27 +62,43 @@ export default function AppuntamentiWeekView({
     }
 
     return days
-  }, [weekData])
+  }, [])
 
-  // Raggruppa appuntamenti per giorno
-  const appuntamentiPerGiorno = useMemo(() => {
-    const grouped: { [key: string]: Appuntamento[] } = {}
+  // Raggruppa appuntamenti per operatore e per giorno
+  const appuntamentiPerOperatoreEGiorno = useMemo(() => {
+    const grouped: {
+      [operatoreId: string]: {
+        operatore: Operatore
+        perGiorno: { [dateKey: string]: Appuntamento[] }
+      }
+    } = {}
 
-    weekDays.forEach(day => {
-      const dateKey = day.toISOString().split('T')[0]
-      grouped[dateKey] = []
+    // Inizializza struttura per ogni operatore
+    operatori.forEach(op => {
+      const perGiorno: { [dateKey: string]: Appuntamento[] } = {}
+      weekDays.forEach(day => {
+        const dateKey = day.toISOString().split('T')[0]
+        perGiorno[dateKey] = []
+      })
+      grouped[op.id] = {
+        operatore: op,
+        perGiorno
+      }
     })
 
+    // Raggruppa appuntamenti
     appuntamenti.forEach(app => {
       const date = new Date(app.dataOra)
       const dateKey = date.toISOString().split('T')[0]
-      if (grouped[dateKey]) {
-        grouped[dateKey].push(app)
+      const operatoreId = app.operatore.id
+
+      if (grouped[operatoreId]?.perGiorno[dateKey]) {
+        grouped[operatoreId].perGiorno[dateKey].push(app)
       }
     })
 
     return grouped
-  }, [appuntamenti, weekDays])
+  }, [appuntamenti, operatori, weekDays])
 
   const formatDayHeader = (date: Date) => {
     const today = new Date()
@@ -80,6 +111,7 @@ export default function AppuntamentiWeekView({
     return {
       weekday: date.toLocaleDateString('it-IT', { weekday: 'short' }),
       day: date.getDate(),
+      month: date.toLocaleDateString('it-IT', { month: 'short' }),
       isToday
     }
   }
@@ -94,18 +126,48 @@ export default function AppuntamentiWeekView({
   const getStatoColor = (stato: string) => {
     switch (stato) {
       case 'confermato':
-        return 'bg-blue-100 border-blue-300'
+        return 'bg-blue-50 border-blue-300'
       case 'completato':
-        return 'bg-green-100 border-green-300'
+        return 'bg-green-50 border-green-300'
       case 'cancellato':
-        return 'bg-gray-100 border-gray-300'
+        return 'bg-gray-50 border-gray-300 opacity-60'
       default:
-        return 'bg-gray-100 border-gray-300'
+        return 'bg-gray-50 border-gray-300'
     }
   }
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Sei sicuro di voler eliminare questo appuntamento?')) return
+  const handleCompleta = async (id: number) => {
+    setActioningId(id)
+    const result = await updateAppuntamentoStato(id, 'completato')
+    setActioningId(null)
+
+    if (result.success) {
+      router.refresh()
+    } else {
+      alert(result.error)
+    }
+  }
+
+  const handleAnnulla = async (id: number) => {
+    setActioningId(id)
+    const result = await updateAppuntamentoStato(id, 'cancellato')
+    setActioningId(null)
+
+    if (result.success) {
+      router.refresh()
+    } else {
+      alert(result.error)
+    }
+  }
+
+  const handleEliminaDefinitivamente = async (id: number) => {
+    // Confirmation dialog with clear message
+    const confirmed = confirm(
+      'Elimina definitivamente l\'appuntamento?\n\n' +
+      'Questa azione non è reversibile. Vuoi davvero eliminare l\'appuntamento dal sistema?'
+    )
+
+    if (!confirmed) return
 
     setActioningId(id)
     const result = await deleteAppuntamento(id)
@@ -133,10 +195,10 @@ export default function AppuntamentiWeekView({
 
   const totalAppuntamenti = appuntamenti.length
 
-  if (weekDays.length === 0) {
+  if (operatori.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow p-8 text-center">
-        <p className="text-gray-500">Errore nel caricamento della settimana</p>
+        <p className="text-gray-500">Nessun operatore attivo configurato</p>
       </div>
     )
   }
@@ -147,46 +209,82 @@ export default function AppuntamentiWeekView({
         Vista Settimanale ({totalAppuntamenti} {totalAppuntamenti === 1 ? 'appuntamento' : 'appuntamenti'})
       </h2>
 
-      <div className="grid grid-cols-7 gap-1">
-        {weekDays.map((day) => {
-          const header = formatDayHeader(day)
-          const dateKey = day.toISOString().split('T')[0]
-          const dayAppuntamenti = appuntamentiPerGiorno[dateKey] || []
+      {/* Vista a colonne per operatore */}
+      <div className="overflow-x-auto">
+        <div className="inline-block min-w-full">
+          {operatori.map((operatore) => {
+            const operatoreData = appuntamentiPerOperatoreEGiorno[operatore.id]
+            if (!operatoreData) return null
 
-          return (
-            <div key={dateKey} className="min-h-[120px]">
-              {/* Header giorno */}
-              <div
-                className={`text-center py-2 rounded-t-lg ${
-                  header.isToday
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700'
-                }`}
-              >
-                <div className="text-xs font-medium uppercase">{header.weekday}</div>
-                <div className="text-lg font-bold">{header.day}</div>
-              </div>
+            const operatoreAppuntamenti = Object.values(operatoreData.perGiorno).flat()
+            const count = operatoreAppuntamenti.length
 
-              {/* Appuntamenti del giorno */}
-              <div className="bg-white border border-t-0 rounded-b-lg p-1 space-y-1 min-h-[100px]">
-                {dayAppuntamenti.map((app) => (
-                  <button
-                    key={app.id}
-                    onClick={() => setSelectedApp(app)}
-                    className={`w-full text-left p-1 rounded border text-xs ${getStatoColor(app.stato)} hover:shadow-md transition-shadow`}
-                  >
-                    <div className="font-semibold truncate">
-                      {formatTime(app.dataOra)}
-                    </div>
-                    <div className="truncate text-gray-700">
-                      {app.cliente.cognome}
-                    </div>
-                  </button>
-                ))}
+            return (
+              <div key={operatore.id} className="mb-6">
+                {/* Header operatore */}
+                <div
+                  className="flex items-center gap-2 mb-2 p-3 rounded-lg"
+                  style={{ backgroundColor: operatore.colore ? `${operatore.colore}20` : '#E5E7EB' }}
+                >
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: operatore.colore || '#3B82F6' }}
+                  />
+                  <h3 className="font-semibold text-lg">{operatore.cognome} {operatore.nome}</h3>
+                  <span className="text-sm text-gray-600">({count})</span>
+                </div>
+
+                {/* Griglia giorni */}
+                <div className="grid grid-cols-7 gap-1">
+                  {weekDays.map((day) => {
+                    const header = formatDayHeader(day)
+                    const dateKey = day.toISOString().split('T')[0]
+                    const dayAppuntamenti = operatoreData.perGiorno[dateKey] || []
+
+                    return (
+                      <div key={dateKey} className="min-h-[120px]">
+                        {/* Header giorno */}
+                        <div
+                          className={`text-center py-2 rounded-t-lg ${
+                            header.isToday
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-gray-100 text-gray-700'
+                          }`}
+                        >
+                          <div className="text-xs font-medium uppercase">{header.weekday}</div>
+                          <div className="text-lg font-bold">{header.day}</div>
+                          <div className="text-[10px]">{header.month}</div>
+                        </div>
+
+                        {/* Appuntamenti del giorno */}
+                        <div className="bg-white border border-t-0 rounded-b-lg p-1 space-y-1 min-h-[100px]">
+                          {dayAppuntamenti.map((app) => (
+                            <button
+                              key={app.id}
+                              onClick={() => setSelectedApp(app)}
+                              className={`w-full text-left p-1.5 rounded border text-xs ${getStatoColor(app.stato)} hover:shadow-md transition-shadow`}
+                              style={{ borderLeftWidth: '3px', borderLeftColor: operatore.colore || '#3B82F6' }}
+                            >
+                              <div className="font-semibold truncate">
+                                {formatTime(app.dataOra)}
+                              </div>
+                              <div className="truncate text-gray-700 text-[11px]">
+                                {app.cliente.cognome}
+                              </div>
+                              <div className="truncate text-gray-500 text-[10px]">
+                                {app.durata}min
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
-            </div>
-          )
-        })}
+            )
+          })}
+        </div>
       </div>
 
       {/* Modal dettaglio appuntamento */}
@@ -206,6 +304,16 @@ export default function AppuntamentiWeekView({
                 <span className="text-sm text-gray-600">Cliente:</span>
                 <div className="font-semibold">
                   {selectedApp.cliente.cognome} {selectedApp.cliente.nome}
+                </div>
+              </div>
+              <div>
+                <span className="text-sm text-gray-600">Operatore:</span>
+                <div className="font-semibold flex items-center gap-2">
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: selectedApp.operatore.colore || '#3B82F6' }}
+                  />
+                  {selectedApp.operatore.cognome} {selectedApp.operatore.nome}
                 </div>
               </div>
               <div>
@@ -232,44 +340,46 @@ export default function AppuntamentiWeekView({
               </div>
             </div>
 
-            {/* Azioni */}
-            <div className="space-y-2">
-              {selectedApp.stato === 'confermato' && (
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleChangeStato(selectedApp.id, 'completato')}
-                    disabled={actioningId === selectedApp.id}
-                    className="flex-1 px-3 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50"
-                  >
-                    ✓ Completa
-                  </button>
-                  <button
-                    onClick={() => handleChangeStato(selectedApp.id, 'cancellato')}
-                    disabled={actioningId === selectedApp.id}
-                    className="flex-1 px-3 py-2 bg-yellow-600 text-white rounded-lg text-sm font-medium hover:bg-yellow-700 disabled:opacity-50"
-                  >
-                    ✕ Cancella
-                  </button>
-                </div>
-              )}
+            {/* Azioni - Small buttons in horizontal row */}
+            <div className="space-y-3">
+              <div className="flex gap-2 items-center flex-wrap">
+                {selectedApp.stato === 'confermato' && (
+                  <>
+                    <button
+                      onClick={() => handleCompleta(selectedApp.id)}
+                      disabled={actioningId === selectedApp.id}
+                      className="px-3 py-1.5 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700 disabled:opacity-50 transition-colors"
+                    >
+                      ✓ Completa
+                    </button>
+                    <button
+                      onClick={() => handleAnnulla(selectedApp.id)}
+                      disabled={actioningId === selectedApp.id}
+                      className="px-3 py-1.5 bg-orange-500 text-white rounded text-xs font-medium hover:bg-orange-600 disabled:opacity-50 transition-colors"
+                    >
+                      Annulla
+                    </button>
+                  </>
+                )}
 
-              {selectedApp.stato !== 'confermato' && (
+                {selectedApp.stato !== 'confermato' && (
+                  <button
+                    onClick={() => handleChangeStato(selectedApp.id, 'confermato')}
+                    disabled={actioningId === selectedApp.id}
+                    className="px-3 py-1.5 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                  >
+                    Ripristina
+                  </button>
+                )}
+
                 <button
-                  onClick={() => handleChangeStato(selectedApp.id, 'confermato')}
+                  onClick={() => handleEliminaDefinitivamente(selectedApp.id)}
                   disabled={actioningId === selectedApp.id}
-                  className="w-full px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+                  className="px-3 py-1.5 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700 disabled:opacity-50 transition-colors"
                 >
-                  Ripristina
+                  {actioningId === selectedApp.id ? 'Eliminazione...' : 'Elimina definitivamente'}
                 </button>
-              )}
-
-              <button
-                onClick={() => handleDelete(selectedApp.id)}
-                disabled={actioningId === selectedApp.id}
-                className="w-full px-3 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 disabled:opacity-50"
-              >
-                {actioningId === selectedApp.id ? 'Eliminazione...' : 'Elimina'}
-              </button>
+              </div>
 
               <button
                 onClick={() => setSelectedApp(null)}

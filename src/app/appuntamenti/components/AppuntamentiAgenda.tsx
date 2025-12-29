@@ -15,6 +15,12 @@ type Appuntamento = {
     nome: string
     cognome: string
   }
+  operatore: {
+    id: string
+    nome: string
+    cognome: string
+    colore: string | null
+  }
 }
 
 export default function AppuntamentiAgenda({
@@ -25,8 +31,38 @@ export default function AppuntamentiAgenda({
   const [actioningId, setActioningId] = useState<number | null>(null)
   const router = useRouter()
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Sei sicuro di voler eliminare questo appuntamento?')) return
+  const handleCompleta = async (id: number) => {
+    setActioningId(id)
+    const result = await updateAppuntamentoStato(id, 'completato')
+    setActioningId(null)
+
+    if (result.success) {
+      router.refresh()
+    } else {
+      alert(result.error)
+    }
+  }
+
+  const handleAnnulla = async (id: number) => {
+    setActioningId(id)
+    const result = await updateAppuntamentoStato(id, 'cancellato')
+    setActioningId(null)
+
+    if (result.success) {
+      router.refresh()
+    } else {
+      alert(result.error)
+    }
+  }
+
+  const handleEliminaDefinitivamente = async (id: number) => {
+    // Confirmation dialog with clear message
+    const confirmed = confirm(
+      'Elimina definitivamente l\'appuntamento?\n\n' +
+      'Questa azione non è reversibile. Vuoi davvero eliminare l\'appuntamento dal sistema?'
+    )
+
+    if (!confirmed) return
 
     setActioningId(id)
     const result = await deleteAppuntamento(id)
@@ -86,7 +122,11 @@ export default function AppuntamentiAgenda({
       </h2>
 
       {appuntamenti.map((app) => (
-        <div key={app.id} className="bg-white rounded-lg shadow p-4">
+        <div
+          key={app.id}
+          className="bg-white rounded-lg shadow p-4"
+          style={{ borderLeft: `4px solid ${app.operatore.colore || '#3B82F6'}` }}
+        >
           <div className="flex justify-between items-start mb-3">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
@@ -103,47 +143,52 @@ export default function AppuntamentiAgenda({
               <div className="text-gray-600 text-sm mt-1">
                 <p>{app.servizio}</p>
                 <p>{app.durata} minuti</p>
+                <p className="text-xs mt-1 font-medium" style={{ color: app.operatore.colore || '#3B82F6' }}>
+                  Operatore: {app.operatore.cognome} {app.operatore.nome}
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Azioni rapide */}
-          {app.stato === 'confermato' && (
-            <div className="flex gap-2 mb-2">
-              <button
-                onClick={() => handleChangeStato(app.id, 'completato')}
-                disabled={actioningId === app.id}
-                className="flex-1 px-3 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50"
-              >
-                ✓ Completa
-              </button>
-              <button
-                onClick={() => handleChangeStato(app.id, 'cancellato')}
-                disabled={actioningId === app.id}
-                className="flex-1 px-3 py-2 bg-yellow-600 text-white rounded-lg text-sm font-medium hover:bg-yellow-700 disabled:opacity-50"
-              >
-                ✕ Cancella
-              </button>
-            </div>
-          )}
+          {/* Azioni rapide - Small buttons in horizontal row */}
+          <div className="flex gap-2 items-center">
+            {app.stato === 'confermato' && (
+              <>
+                <button
+                  onClick={() => handleCompleta(app.id)}
+                  disabled={actioningId === app.id}
+                  className="px-3 py-1.5 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700 disabled:opacity-50 transition-colors"
+                >
+                  ✓ Completa
+                </button>
+                <button
+                  onClick={() => handleAnnulla(app.id)}
+                  disabled={actioningId === app.id}
+                  className="px-3 py-1.5 bg-orange-500 text-white rounded text-xs font-medium hover:bg-orange-600 disabled:opacity-50 transition-colors"
+                >
+                  Annulla
+                </button>
+              </>
+            )}
 
-          {app.stato !== 'confermato' && (
+            {app.stato !== 'confermato' && (
+              <button
+                onClick={() => handleChangeStato(app.id, 'confermato')}
+                disabled={actioningId === app.id}
+                className="px-3 py-1.5 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              >
+                Ripristina
+              </button>
+            )}
+
             <button
-              onClick={() => handleChangeStato(app.id, 'confermato')}
+              onClick={() => handleEliminaDefinitivamente(app.id)}
               disabled={actioningId === app.id}
-              className="w-full px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 mb-2"
+              className="px-3 py-1.5 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700 disabled:opacity-50 transition-colors"
             >
-              Ripristina
+              {actioningId === app.id ? 'Eliminazione...' : 'Elimina definitivamente'}
             </button>
-          )}
-
-          <button
-            onClick={() => handleDelete(app.id)}
-            disabled={actioningId === app.id}
-            className="w-full px-3 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 disabled:opacity-50"
-          >
-            {actioningId === app.id ? 'Eliminazione...' : 'Elimina'}
-          </button>
+          </div>
         </div>
       ))}
     </div>

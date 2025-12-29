@@ -24,18 +24,38 @@ model Cliente {
   interventi    Intervento[]
 }
 
-model Appuntamento {
-  id        Int      @id @default(autoincrement())
-  clienteId Int
-  dataOra   DateTime
-  servizio  String
-  durata    Int      // durata in minuti
-  stato     String   @default("confermato") // confermato, completato, cancellato
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Operatore {
+  id           String         @id @default(cuid())
+  nome         String
+  cognome      String
+  colore       String?        // es. "#FF6B6B"
+  attivo       Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 
   // Relazioni
-  cliente   Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  appuntamenti Appuntamento[]
+
+  @@map("operatori")
+}
+
+model Appuntamento {
+  id          Int      @id @default(autoincrement())
+  clienteId   Int
+  operatoreId String
+  dataOra     DateTime
+  servizio    String
+  durata      Int      // durata in minuti
+  stato       String   @default("confermato") // confermato, completato, cancellato
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relazioni
+  cliente   Cliente   @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  operatore Operatore @relation(fields: [operatoreId], references: [id], onDelete: Cascade)
+
+  // Constraint: un operatore non può avere appuntamenti sovrapposti nello stesso momento
+  @@unique([operatoreId, dataOra])
 }
 
 model Intervento {
@@ -74,4 +94,16 @@ model InterventoProdotto {
   prodotto     Prodotto   @relation(fields: [prodottoId], references: [id], onDelete: Cascade)
 
   @@id([interventoId, prodottoId])
+}
+
+model Servizio {
+  id        String   @id @default(cuid())
+  nome      String
+  prezzo    Float
+  durata    Int      @default(60) // durata predefinita in minuti
+  attivo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("servizi")
 }

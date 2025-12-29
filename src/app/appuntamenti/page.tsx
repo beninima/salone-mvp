@@ -1,4 +1,5 @@
 import { getAppuntamentiByDate, getAppuntamentiByWeek, getClientiForSelect } from '@/app/actions/appuntamenti'
+import { getOperatoriAttivi } from '@/app/actions/operatori'
 import AppuntamentiAgenda from './components/AppuntamentiAgenda'
 import AppuntamentiWeekView from './components/AppuntamentiWeekView'
 import AppuntamentoForm from './components/AppuntamentoForm'
@@ -14,15 +15,17 @@ export default async function AppuntamentiPage({
   const selectedDate = searchParams.date || today
   const view = searchParams.view || 'day' // 'day' o 'week'
 
-  const [appuntamentiResult, clientiResult] = await Promise.all([
+  const [appuntamentiResult, clientiResult, operatoriResult] = await Promise.all([
     view === 'week'
       ? getAppuntamentiByWeek(selectedDate)
       : getAppuntamentiByDate(selectedDate),
-    getClientiForSelect()
+    getClientiForSelect(),
+    getOperatoriAttivi()
   ])
 
   const appuntamenti = appuntamentiResult.success ? appuntamentiResult.data : []
   const clienti = clientiResult.success ? clientiResult.data : []
+  const operatori = operatoriResult.success ? operatoriResult.data : []
 
   // Per la vista settimanale, ottieni le date di inizio e fine settimana
   const weekData = null
@@ -43,12 +46,17 @@ export default async function AppuntamentiPage({
       {/* Content */}
       <div className="px-4 py-4 space-y-4">
         {/* Form per nuovo appuntamento */}
-        <AppuntamentoForm clienti={clienti || []} selectedDate={selectedDate} />
+        <AppuntamentoForm 
+          clienti={clienti || []} 
+          operatori={operatori || []}
+          selectedDate={selectedDate} 
+        />
 
         {/* Agenda */}
         {view === 'week' ? (
           <AppuntamentiWeekView
             appuntamenti={appuntamenti || []}
+            operatori={operatori || []}
             weekData={weekData}
           />
         ) : (

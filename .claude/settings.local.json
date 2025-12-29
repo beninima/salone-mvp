@@ -17,7 +17,17 @@
       "Bash(git push)",
       "Bash(npm install:*)",
       "Bash(npx prisma generate:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nRun prisma generate on Vercel\n\n- Add postinstall script to run prisma generate after npm install\n- Update build script to run prisma generate before next build\n- Add prisma script for direct CLI access\n\nThis fixes PrismaClientInitializationError on Vercel deployment\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nRun prisma generate on Vercel\n\n- Add postinstall script to run prisma generate after npm install\n- Update build script to run prisma generate before next build\n- Add prisma script for direct CLI access\n\nThis fixes PrismaClientInitializationError on Vercel deployment\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(cat:*)",
+      "Bash(npx tsx:*)",
+      "Bash(xargs kill:*)",
+      "Bash(curl:*)",
+      "Bash(lsof:*)",
+      "Bash(killall:*)",
+      "Bash(pkill:*)",
+      "Bash(while read pid)",
+      "Bash(do kill -9 $pid)",
+      "Bash(done)"
     ]
   }
 }
