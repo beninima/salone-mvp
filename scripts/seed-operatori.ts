@@ -16,19 +16,22 @@ async function main() {
   const operatorsToCreate = [
     {
       id: 'op-maria',
-      nome: 'Maria Rossi',
+      nome: 'Maria',
+      cognome: 'Rossi',
       colore: '#E91E63', // Pink
       attivo: true
     },
     {
       id: 'op-giulia',
-      nome: 'Giulia Bianchi',
+      nome: 'Giulia',
+      cognome: 'Bianchi',
       colore: '#9C27B0', // Purple
       attivo: true
     },
     {
       id: 'op-anna',
-      nome: 'Anna Verdi',
+      nome: 'Anna',
+      cognome: 'Verdi',
       colore: '#FF9800', // Orange
       attivo: true
     }
@@ -38,7 +41,7 @@ async function main() {
     const existing = await prisma.operatore.findUnique({ where: { id: op.id } })
     if (!existing) {
       await prisma.operatore.create({ data: op })
-      console.log(`Created operator: ${op.nome}`)
+      console.log(`Created operator: ${op.nome} ${op.cognome}`)
     }
   }
 
@@ -48,7 +51,7 @@ async function main() {
   const operatori = await prisma.operatore.findMany()
   console.log('\nOperatori in database:')
   operatori.forEach(op => {
-    console.log(`- ${op.nome} (${op.colore}) - ${op.attivo ? 'Attivo' : 'Inattivo'}`)
+    console.log(`- ${op.nome} ${op.cognome} (${op.colore}) - ${op.attivo ? 'Attivo' : 'Inattivo'}`)
   })
 }
 
