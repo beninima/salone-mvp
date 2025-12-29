@@ -28,7 +28,9 @@
       "Bash(while read pid)",
       "Bash(do kill -9 $pid)",
       "Bash(done)",
-      "Bash(npm run db:seed:*)"
+      "Bash(npm run db:seed:*)",
+      "Bash(git commit:*)",
+      "Bash(git restore:*)"
     ]
   }
 }
