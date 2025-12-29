@@ -43,6 +43,14 @@ export default function AppuntamentiWeekView({
   const [selectedApp, setSelectedApp] = useState<Appuntamento | null>(null)
   const router = useRouter()
 
+  // Helper to get local date string (YYYY-MM-DD) without timezone issues
+  const getLocalDateKey = (date: Date): string => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
   // Genera i 7 giorni della settimana (Lun-Dom)
   const weekDays = useMemo(() => {
     const days = []
@@ -77,7 +85,7 @@ export default function AppuntamentiWeekView({
     operatori.forEach(op => {
       const perGiorno: { [dateKey: string]: Appuntamento[] } = {}
       weekDays.forEach(day => {
-        const dateKey = day.toISOString().split('T')[0]
+        const dateKey = getLocalDateKey(day)
         perGiorno[dateKey] = []
       })
       grouped[op.id] = {
@@ -89,7 +97,7 @@ export default function AppuntamentiWeekView({
     // Raggruppa appuntamenti
     appuntamenti.forEach(app => {
       const date = new Date(app.dataOra)
-      const dateKey = date.toISOString().split('T')[0]
+      const dateKey = getLocalDateKey(date)
       const operatoreId = app.operatore.id
 
       if (grouped[operatoreId]?.perGiorno[dateKey]) {
@@ -238,7 +246,7 @@ export default function AppuntamentiWeekView({
                 <div className="grid grid-cols-7 gap-1">
                   {weekDays.map((day) => {
                     const header = formatDayHeader(day)
-                    const dateKey = day.toISOString().split('T')[0]
+                    const dateKey = getLocalDateKey(day)
                     const dayAppuntamenti = operatoreData.perGiorno[dateKey] || []
 
                     return (
