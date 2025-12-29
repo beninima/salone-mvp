@@ -22,6 +22,7 @@ model Cliente {
   // Relazioni
   appuntamenti  Appuntamento[]
   interventi    Intervento[]
+  fotoLavori    FotoLavoro[]
 }
 
 model Operatore {
@@ -35,6 +36,7 @@ model Operatore {
 
   // Relazioni
   appuntamenti Appuntamento[]
+  fotoLavori   FotoLavoro[]
 
   @@map("operatori")
 }
@@ -97,13 +99,51 @@ model InterventoProdotto {
 }
 
 model Servizio {
-  id        String   @id @default(cuid())
-  nome      String
-  prezzo    Float
-  durata    Int      @default(60) // durata predefinita in minuti
-  attivo    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String       @id @default(cuid())
+  nome       String
+  prezzo     Float
+  durata     Int          @default(60) // durata predefinita in minuti
+  attivo     Boolean      @default(true)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  // Relazioni
+  fotoLavori FotoLavoro[]
 
   @@map("servizi")
+}
+
+model FotoLavoro {
+  id          String   @id @default(cuid())
+  clienteId   Int
+  operatoreId String
+  servizioId  String?
+  data        DateTime @default(now())
+  note        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relazioni
+  cliente     Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  operatore   Operatore @relation(fields: [operatoreId], references: [id], onDelete: Cascade)
+  servizio    Servizio? @relation(fields: [servizioId], references: [id], onDelete: SetNull)
+  foto        Foto[]
+
+  @@map("foto_lavori")
+}
+
+model Foto {
+  id           String     @id @default(cuid())
+  fotoLavoroId String
+  url          String     // Vercel Blob URL
+  tipo         String     // "prima" | "dopo"
+  ordine       Int        // 1,2,3,4,5 sequenza
+  createdAt    DateTime   @default(now())
+
+  // Relazioni
+  fotoLavoro   FotoLavoro @relation(fields: [fotoLavoroId], references: [id], onDelete: Cascade)
+
+  @@unique([fotoLavoroId, tipo, ordine])
+  @@index([fotoLavoroId])
+  @@map("foto")
 }

@@ -56,7 +56,6 @@ export default function AppuntamentiAgenda({
   }
 
   const handleEliminaDefinitivamente = async (id: number) => {
-    // Confirmation dialog with clear message
     const confirmed = confirm(
       'Elimina definitivamente l\'appuntamento?\n\n' +
       'Questa azione non è reversibile. Vuoi davvero eliminare l\'appuntamento dal sistema?'
@@ -75,9 +74,9 @@ export default function AppuntamentiAgenda({
     }
   }
 
-  const handleChangeStato = async (id: number, stato: string) => {
+  const handleRipristina = async (id: number) => {
     setActioningId(id)
-    const result = await updateAppuntamentoStato(id, stato)
+    const result = await updateAppuntamentoStato(id, 'confermato')
     setActioningId(null)
 
     if (result.success) {
@@ -94,19 +93,6 @@ export default function AppuntamentiAgenda({
     })
   }
 
-  const getStatoColor = (stato: string) => {
-    switch (stato) {
-      case 'confermato':
-        return 'bg-blue-100 text-blue-800'
-      case 'completato':
-        return 'bg-green-100 text-green-800'
-      case 'cancellato':
-        return 'bg-red-100 text-red-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
-
   if (appuntamenti.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow p-8 text-center">
@@ -118,79 +104,169 @@ export default function AppuntamentiAgenda({
   return (
     <div className="space-y-3">
       <h2 className="text-lg font-semibold text-gray-900">
-        Agenda ({appuntamenti.length} {appuntamenti.length === 1 ? 'appuntamento' : 'appuntamenti'})
+        Agenda ({appuntamenti.length})
       </h2>
 
-      {appuntamenti.map((app) => (
-        <div
-          key={app.id}
-          className="bg-white rounded-lg shadow p-4"
-          style={{ borderLeft: `4px solid ${app.operatore.colore || '#3B82F6'}` }}
-        >
-          <div className="flex justify-between items-start mb-3">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-2xl font-bold text-blue-600">
-                  {formatTime(app.dataOra)}
-                </span>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatoColor(app.stato)}`}>
-                  {app.stato}
-                </span>
+      {/* Desktop/Tablet: Compact row layout */}
+      <div className="hidden md:block bg-white rounded-lg shadow overflow-hidden">
+        {appuntamenti.map((app, index) => (
+          <div
+            key={app.id}
+            className={`flex items-center gap-4 px-4 py-3 hover:bg-gray-50 transition-colors ${
+              index !== appuntamenti.length - 1 ? 'border-b' : ''
+            }`}
+            style={{ borderLeft: `4px solid ${app.operatore.colore || '#3B82F6'}` }}
+          >
+            {/* Cognome Nome */}
+            <div className="w-40 font-medium text-gray-900">
+              {app.cliente.cognome} {app.cliente.nome}
+            </div>
+
+            {/* Servizio */}
+            <div className="w-32 text-sm text-gray-700">
+              {app.servizio}
+            </div>
+
+            {/* Tempo (Ora + Durata) */}
+            <div className="w-28 text-center">
+              <div className="text-lg font-bold text-blue-600">
+                {formatTime(app.dataOra)}
               </div>
-              <h3 className="font-semibold text-lg text-gray-900">
-                {app.cliente.cognome} {app.cliente.nome}
-              </h3>
-              <div className="text-gray-600 text-sm mt-1">
-                <p>{app.servizio}</p>
-                <p>{app.durata} minuti</p>
-                <p className="text-xs mt-1 font-medium" style={{ color: app.operatore.colore || '#3B82F6' }}>
-                  Operatore: {app.operatore.cognome} {app.operatore.nome}
-                </p>
+              <div className="text-xs text-gray-500">
+                {app.durata} min
               </div>
             </div>
-          </div>
 
-          {/* Azioni rapide - Small buttons in horizontal row */}
-          <div className="flex gap-2 items-center">
-            {app.stato === 'confermato' && (
-              <>
-                <button
-                  onClick={() => handleCompleta(app.id)}
-                  disabled={actioningId === app.id}
-                  className="px-3 py-1.5 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700 disabled:opacity-50 transition-colors"
-                >
-                  ✓ Completa
-                </button>
-                <button
-                  onClick={() => handleAnnulla(app.id)}
-                  disabled={actioningId === app.id}
-                  className="px-3 py-1.5 bg-orange-500 text-white rounded text-xs font-medium hover:bg-orange-600 disabled:opacity-50 transition-colors"
-                >
-                  Annulla
-                </button>
-              </>
-            )}
+            {/* Operatore */}
+            <div className="flex-1 text-sm font-medium" style={{ color: app.operatore.colore || '#3B82F6' }}>
+              {app.operatore.cognome} {app.operatore.nome}
+            </div>
 
-            {app.stato !== 'confermato' && (
+            {/* Azioni */}
+            <div className="flex gap-2">
               <button
-                onClick={() => handleChangeStato(app.id, 'confermato')}
-                disabled={actioningId === app.id}
-                className="px-3 py-1.5 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                onClick={() => router.push(`/clienti/${app.cliente.id}`)}
+                className="px-3 py-1 text-xs bg-green-500 hover:bg-green-600 text-white rounded font-medium transition-colors"
               >
-                Ripristina
+                📸 Foto
               </button>
-            )}
 
-            <button
-              onClick={() => handleEliminaDefinitivamente(app.id)}
-              disabled={actioningId === app.id}
-              className="px-3 py-1.5 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700 disabled:opacity-50 transition-colors"
-            >
-              {actioningId === app.id ? 'Eliminazione...' : 'Elimina definitivamente'}
-            </button>
+              {app.stato !== 'confermato' && (
+                <button
+                  onClick={() => handleRipristina(app.id)}
+                  disabled={actioningId === app.id}
+                  className="px-3 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded font-medium transition-colors disabled:opacity-50"
+                >
+                  Ripristina
+                </button>
+              )}
+
+              {app.stato === 'confermato' && (
+                <>
+                  <button
+                    onClick={() => handleCompleta(app.id)}
+                    disabled={actioningId === app.id}
+                    className="px-3 py-1 text-xs bg-green-500 hover:bg-green-600 text-white rounded font-medium transition-colors disabled:opacity-50"
+                  >
+                    Completa
+                  </button>
+                  <button
+                    onClick={() => handleAnnulla(app.id)}
+                    disabled={actioningId === app.id}
+                    className="px-3 py-1 text-xs bg-orange-500 hover:bg-orange-600 text-white rounded font-medium transition-colors disabled:opacity-50"
+                  >
+                    Annulla
+                  </button>
+                </>
+              )}
+
+              <button
+                onClick={() => handleEliminaDefinitivamente(app.id)}
+                disabled={actioningId === app.id}
+                className="px-3 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded font-medium transition-colors disabled:opacity-50"
+              >
+                {actioningId === app.id ? '...' : 'Elim'}
+              </button>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
+
+      {/* Mobile: Card layout */}
+      <div className="md:hidden space-y-3">
+        {appuntamenti.map((app) => (
+          <div
+            key={app.id}
+            className="bg-white rounded-lg shadow p-4"
+            style={{ borderLeft: `4px solid ${app.operatore.colore || '#3B82F6'}` }}
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div className="flex-1">
+                <div className="text-2xl font-bold text-blue-600 mb-1">
+                  {formatTime(app.dataOra)}
+                </div>
+                <h3 className="font-semibold text-lg text-gray-900">
+                  {app.cliente.cognome} {app.cliente.nome}
+                </h3>
+                <div className="text-gray-600 text-sm mt-1">
+                  <p>{app.servizio}</p>
+                  <p>{app.durata} minuti</p>
+                  <p className="text-xs mt-1 font-medium" style={{ color: app.operatore.colore || '#3B82F6' }}>
+                    {app.operatore.cognome} {app.operatore.nome}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Azioni mobile */}
+            <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={() => router.push(`/clienti/${app.cliente.id}`)}
+                className="px-2 py-1 bg-green-500 text-white rounded text-xs font-medium hover:bg-green-600"
+              >
+                📸 Foto
+              </button>
+
+              {app.stato !== 'confermato' && (
+                <button
+                  onClick={() => handleRipristina(app.id)}
+                  disabled={actioningId === app.id}
+                  className="px-2 py-1 bg-blue-500 text-white rounded text-xs font-medium hover:bg-blue-600 disabled:opacity-50"
+                >
+                  Ripristina
+                </button>
+              )}
+
+              {app.stato === 'confermato' && (
+                <>
+                  <button
+                    onClick={() => handleCompleta(app.id)}
+                    disabled={actioningId === app.id}
+                    className="px-2 py-1 bg-green-500 text-white rounded text-xs font-medium hover:bg-green-600 disabled:opacity-50"
+                  >
+                    Completa
+                  </button>
+                  <button
+                    onClick={() => handleAnnulla(app.id)}
+                    disabled={actioningId === app.id}
+                    className="px-2 py-1 bg-orange-500 text-white rounded text-xs font-medium hover:bg-orange-600 disabled:opacity-50"
+                  >
+                    Annulla
+                  </button>
+                </>
+              )}
+
+              <button
+                onClick={() => handleEliminaDefinitivamente(app.id)}
+                disabled={actioningId === app.id}
+                className="px-2 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600 disabled:opacity-50"
+              >
+                {actioningId === app.id ? '...' : 'Elim'}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

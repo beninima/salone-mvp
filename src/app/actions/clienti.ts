@@ -40,6 +40,24 @@ export async function getCliente(id: number) {
   }
 }
 
+export async function getClienteById(id: number) {
+  try {
+    const cliente = await prisma.cliente.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        nome: true,
+        cognome: true,
+        cellulare: true,
+        note: true
+      }
+    })
+    return { success: true, data: cliente }
+  } catch (error) {
+    return { success: false, error: 'Cliente non trovato', data: null }
+  }
+}
+
 export async function createCliente(formData: FormData) {
   try {
     const nome = formData.get('nome') as string

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getServizi, toggleServizioAttivo, deleteServizio } from '@/app/actions/servizi'
+import { getServizi, deleteServizio } from '@/app/actions/servizi'
 import ServizioForm from './components/ServizioForm'
 import ServizioEditModal from './components/ServizioEditModal'
 
@@ -32,15 +32,6 @@ export default function ServiziPage() {
     loadServizi()
   }, [])
 
-  const handleToggleAttivo = async (id: string, attivo: boolean) => {
-    const result = await toggleServizioAttivo(id, !attivo)
-    if (result.success) {
-      loadServizi()
-    } else {
-      alert(result.error)
-    }
-  }
-
   const handleDelete = async (id: string, nome: string) => {
     if (!confirm(`Eliminare il servizio "${nome}"?`)) return
 
@@ -60,7 +51,6 @@ export default function ServiziPage() {
   }
 
   const serviziAttivi = servizi.filter(s => s.attivo)
-  const serviziDisattivati = servizi.filter(s => !s.attivo)
 
   if (loading) {
     return (
@@ -88,97 +78,100 @@ export default function ServiziPage() {
         {/* Form */}
         <ServizioForm />
 
-        {/* Servizi Attivi */}
+        {/* Servizi List - Compact Layout */}
         {serviziAttivi.length > 0 && (
-          <div className="space-y-3">
-            <h2 className="text-lg font-semibold text-gray-900">Servizi Attivi</h2>
-            {serviziAttivi.map((servizio) => (
-              <div
-                key={servizio.id}
-                className="bg-white rounded-lg shadow p-4 border-l-4 border-green-500"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg text-gray-900">
-                      {servizio.nome}
-                    </h3>
-                    <div className="text-gray-600 text-sm mt-1 space-y-0.5">
-                      <p className="font-bold text-green-700 text-base">
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="px-4 py-3 border-b bg-gray-50">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Servizi Attivi ({serviziAttivi.length})
+              </h2>
+            </div>
+
+            {/* Desktop/Tablet: 4 columns */}
+            <div className="hidden md:block">
+              {serviziAttivi.map((servizio, index) => (
+                <div
+                  key={servizio.id}
+                  className={`flex items-center gap-4 px-4 py-3 hover:bg-gray-50 transition-colors ${
+                    index !== serviziAttivi.length - 1 ? 'border-b' : ''
+                  }`}
+                >
+                  {/* Nome Servizio */}
+                  <div className="flex-1 font-medium text-gray-900">
+                    {servizio.nome}
+                  </div>
+
+                  {/* Prezzo */}
+                  <div className="w-24 text-right font-semibold text-gray-900">
+                    {formatPrezzo(servizio.prezzo)}
+                  </div>
+
+                  {/* Durata */}
+                  <div className="w-24 text-center text-gray-600">
+                    {servizio.durata} min
+                  </div>
+
+                  {/* Azioni */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setEditingServizio(servizio)}
+                      className="px-3 py-1 text-xs bg-orange-500 hover:bg-orange-600 text-white rounded font-medium transition-colors"
+                    >
+                      Mod
+                    </button>
+                    <button
+                      onClick={() => handleDelete(servizio.id, servizio.nome)}
+                      className="px-3 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded font-medium transition-colors"
+                    >
+                      Elim
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Mobile: 2 rows layout */}
+            <div className="md:hidden">
+              {serviziAttivi.map((servizio, index) => (
+                <div
+                  key={servizio.id}
+                  className={`px-4 py-3 hover:bg-gray-50 transition-colors ${
+                    index !== serviziAttivi.length - 1 ? 'border-b' : ''
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    {/* Nome + Prezzo */}
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">{servizio.nome}</div>
+                      <div className="font-semibold text-gray-900 text-sm mt-0.5">
                         {formatPrezzo(servizio.prezzo)}
-                      </p>
-                      <p>{servizio.durata} minuti</p>
+                      </div>
+                    </div>
+
+                    {/* Durata + Bottoni */}
+                    <div className="flex items-center gap-2">
+                      <div className="text-sm text-gray-600 whitespace-nowrap">
+                        {servizio.durata} min
+                      </div>
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => setEditingServizio(servizio)}
+                          className="px-2 py-1 text-xs bg-orange-500 hover:bg-orange-600 text-white rounded font-medium"
+                        >
+                          Mod
+                        </button>
+                        <button
+                          onClick={() => handleDelete(servizio.id, servizio.nome)}
+                          className="px-2 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded font-medium"
+                        >
+                          Elim
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-
-                {/* Azioni */}
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setEditingServizio(servizio)}
-                    className="px-3 py-1.5 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 transition-colors"
-                  >
-                    Modifica
-                  </button>
-                  <button
-                    onClick={() => handleToggleAttivo(servizio.id, servizio.attivo)}
-                    className="px-3 py-1.5 bg-orange-500 text-white rounded text-xs font-medium hover:bg-orange-600 transition-colors"
-                  >
-                    Disattiva
-                  </button>
-                  <button
-                    onClick={() => handleDelete(servizio.id, servizio.nome)}
-                    className="px-3 py-1.5 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700 transition-colors"
-                  >
-                    Elimina
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Servizi Disattivati */}
-        {serviziDisattivati.length > 0 && (
-          <div className="space-y-3">
-            <h2 className="text-lg font-semibold text-gray-500">
-              Servizi Disattivati ({serviziDisattivati.length})
-            </h2>
-            {serviziDisattivati.map((servizio) => (
-              <div
-                key={servizio.id}
-                className="bg-gray-50 rounded-lg shadow p-4 border-l-4 border-gray-400 opacity-75"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg text-gray-600">
-                      {servizio.nome}
-                    </h3>
-                    <div className="text-gray-500 text-sm mt-1 space-y-0.5">
-                      <p className="font-bold text-base">
-                        {formatPrezzo(servizio.prezzo)}
-                      </p>
-                      <p>{servizio.durata} minuti</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Azioni */}
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleToggleAttivo(servizio.id, servizio.attivo)}
-                    className="px-3 py-1.5 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700 transition-colors"
-                  >
-                    Riattiva
-                  </button>
-                  <button
-                    onClick={() => handleDelete(servizio.id, servizio.nome)}
-                    className="px-3 py-1.5 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700 transition-colors"
-                  >
-                    Elimina
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
 
