@@ -1,15 +1,39 @@
 import { put } from '@vercel/blob'
 
 /**
- * Upload a file to Vercel Blob storage
+ * Upload a file to Vercel Blob storage or local filesystem (dev mode)
  * @param file File or Blob to upload
  * @param filename Custom filename (optional)
- * @returns Blob URL
+ * @returns Blob URL or local URL
  */
 export async function uploadToBlob(file: File | Blob, filename?: string): Promise<string> {
-  try {
-    const actualFilename = filename || `foto-${Date.now()}.jpg`
+  const actualFilename = filename || `foto-${Date.now()}.jpg`
 
+  // LOCAL DEV MODE: save to public/uploads instead of Vercel Blob
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const formData = new FormData()
+      formData.append('file', file, actualFilename)
+
+      const response = await fetch('/api/upload-local', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error('Upload locale fallito')
+      }
+
+      const data = await response.json()
+      return data.url
+    } catch (error) {
+      console.error('❌ Errore upload locale:', error)
+      throw new Error('Errore durante l\'upload della foto')
+    }
+  }
+
+  // PRODUCTION MODE: use Vercel Blob
+  try {
     const blob = await put(actualFilename, file, {
       access: 'public',
       token: process.env.BLOB_READ_WRITE_TOKEN,

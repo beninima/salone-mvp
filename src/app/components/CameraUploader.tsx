@@ -16,17 +16,25 @@ export default function CameraUploader({ onCapture, onClose, tipo }: CameraUploa
 
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current?.getScreenshot()
-    if (imageSrc) {
-      // Convert base64 to File
-      fetch(imageSrc)
-        .then(res => res.blob())
-        .then(blob => {
-          const file = new File([blob], `foto-${tipo}-${Date.now()}.jpg`, { type: 'image/jpeg' })
-          onCapture(file)
-          onClose()
-        })
+
+    if (!imageSrc) {
+      alert('Camera non pronta. Attendi qualche secondo e riprova.')
+      return
     }
-  }, [webcamRef, onCapture, onClose, tipo])
+
+    // Convert base64 to File
+    fetch(imageSrc)
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], `foto-${tipo}-${Date.now()}.jpg`, { type: 'image/jpeg' })
+        onCapture(file)
+        onClose()
+      })
+      .catch(err => {
+        console.error('Errore cattura foto:', err)
+        alert('Errore durante la cattura. Riprova.')
+      })
+  }, [onCapture, onClose, tipo])
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
