@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useSearchParams } from 'next/navigation'
 
 type WeekData = {
@@ -17,6 +17,7 @@ export default function DateSelector({
   view: string
   weekData?: WeekData
 }) {
+  const router = useRouter()
   const searchParams = useSearchParams()
 
   const getDateUrl = (amount: number) => {
@@ -92,15 +93,24 @@ export default function DateSelector({
     return `${startStr} - ${endStr}`
   }
 
+  const handleNavigate = (amount: number) => {
+    const url = getDateUrl(amount)
+    router.push(url)
+  }
+
+  const handleToday = () => {
+    const url = getTodayUrl()
+    router.push(url)
+  }
+
   return (
     <div className="flex items-center gap-2">
-      <Link
-        href={getDateUrl(-1)}
-        prefetch={false}
+      <button
+        onClick={() => handleNavigate(-1)}
         className="px-3 py-2 bg-gray-200 rounded-lg font-medium hover:bg-gray-300"
       >
         ←
-      </Link>
+      </button>
 
       <div className="flex-1 text-center">
         {view === 'week' ? (
@@ -122,21 +132,19 @@ export default function DateSelector({
         )}
       </div>
 
-      <Link
-        href={getDateUrl(1)}
-        prefetch={false}
+      <button
+        onClick={() => handleNavigate(1)}
         className="px-3 py-2 bg-gray-200 rounded-lg font-medium hover:bg-gray-300"
       >
         →
-      </Link>
+      </button>
 
-      <Link
-        href={getTodayUrl()}
-        prefetch={false}
+      <button
+        onClick={handleToday}
         className="px-3 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
       >
         Oggi
-      </Link>
+      </button>
     </div>
   )
 }
