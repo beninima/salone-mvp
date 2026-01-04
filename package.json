@@ -7,7 +7,8 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate && prisma db push && npx tsx prisma/seed.ts",
+    "postinstall": "prisma generate",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "prisma": "prisma",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts"
