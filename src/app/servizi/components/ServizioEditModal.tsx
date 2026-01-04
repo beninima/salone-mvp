@@ -41,19 +41,18 @@ export default function ServizioEditModal({
   }
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-6"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h2 className="text-2xl font-semibold mb-4">Modifica Servizio</h2>
+    <div className="bg-white rounded-lg shadow p-6">
+      <form onSubmit={handleSubmit} className="space-y-3">
+        {/* Header con titolo */}
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-base font-semibold text-gray-900">Modifica Servizio</h2>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
+        {/* Form compatto in griglia */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Nome */}
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Nome Servizio *
             </label>
             <input
@@ -61,12 +60,14 @@ export default function ServizioEditModal({
               name="nome"
               defaultValue={servizio.nome}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Taglio"
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
+          {/* Prezzo */}
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Prezzo (€) *
             </label>
             <input
@@ -76,13 +77,15 @@ export default function ServizioEditModal({
               required
               min="0"
               step="0.01"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="25.00"
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
+          {/* Durata */}
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
-              Durata (minuti) *
+            <label className="block text-xs font-medium text-gray-700 mb-1">
+              Durata (min) *
             </label>
             <input
               type="number"
@@ -92,28 +95,30 @@ export default function ServizioEditModal({
               min="15"
               max="240"
               step="1"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="60"
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
+        </div>
 
-          <div className="flex gap-2 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300"
-            >
-              Annulla
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
-            >
-              {loading ? 'Salvataggio...' : 'Salva'}
-            </button>
-          </div>
-        </form>
-      </div>
+        {/* Pulsanti azione inline a destra */}
+        <div className="flex justify-end gap-2 pt-2 border-t">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-3 py-1 text-xs bg-gray-200 text-gray-800 rounded font-medium hover:bg-gray-300"
+          >
+            ✕ Annulla
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-3 py-1 text-xs bg-blue-600 text-white rounded font-medium hover:bg-blue-700 disabled:opacity-50"
+          >
+            {loading ? '⏳ Salvataggio...' : '💾 Salva'}
+          </button>
+        </div>
+      </form>
     </div>
   )
 }

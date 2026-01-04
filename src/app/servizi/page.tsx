@@ -90,42 +90,56 @@ export default function ServiziPage() {
             {/* Desktop/Tablet: 4 columns */}
             <div className="hidden md:block">
               {serviziAttivi.map((servizio, index) => (
-                <div
-                  key={servizio.id}
-                  className={`flex items-center gap-4 px-6 py-3 hover:bg-gray-50 transition-colors ${
-                    index !== serviziAttivi.length - 1 ? 'border-b' : ''
-                  }`}
-                >
-                  {/* Nome Servizio */}
-                  <div className="flex-1 font-medium text-gray-900">
-                    {servizio.nome}
-                  </div>
-
-                  {/* Prezzo */}
-                  <div className="w-24 text-right font-semibold text-gray-900">
-                    {formatPrezzo(servizio.prezzo)}
-                  </div>
-
-                  {/* Durata */}
-                  <div className="w-24 text-center text-gray-600">
-                    {servizio.durata} min
-                  </div>
-
-                  {/* Azioni */}
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setEditingServizio(servizio)}
-                      className="px-3 py-1 text-xs bg-orange-500 hover:bg-orange-600 text-white rounded font-medium transition-colors"
+                <div key={servizio.id}>
+                  {editingServizio?.id === servizio.id ? (
+                    <div className="p-6 border-b">
+                      <ServizioEditModal
+                        servizio={servizio}
+                        onClose={() => setEditingServizio(null)}
+                        onSuccess={() => {
+                          setEditingServizio(null)
+                          loadServizi()
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className={`flex items-center gap-4 px-6 py-3 hover:bg-gray-50 transition-colors ${
+                        index !== serviziAttivi.length - 1 ? 'border-b' : ''
+                      }`}
                     >
-                      Mod
-                    </button>
-                    <button
-                      onClick={() => handleDelete(servizio.id, servizio.nome)}
-                      className="px-3 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded font-medium transition-colors"
-                    >
-                      Elim
-                    </button>
-                  </div>
+                      {/* Nome Servizio */}
+                      <div className="flex-1 font-medium text-gray-900">
+                        {servizio.nome}
+                      </div>
+
+                      {/* Prezzo */}
+                      <div className="w-24 text-right font-semibold text-gray-900">
+                        {formatPrezzo(servizio.prezzo)}
+                      </div>
+
+                      {/* Durata */}
+                      <div className="w-24 text-center text-gray-600">
+                        {servizio.durata} min
+                      </div>
+
+                      {/* Azioni */}
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setEditingServizio(servizio)}
+                          className="px-3 py-1 text-xs bg-orange-500 hover:bg-orange-600 text-white rounded font-medium transition-colors"
+                        >
+                          Mod
+                        </button>
+                        <button
+                          onClick={() => handleDelete(servizio.id, servizio.nome)}
+                          className="px-3 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded font-medium transition-colors"
+                        >
+                          Elim
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -133,42 +147,56 @@ export default function ServiziPage() {
             {/* Mobile: 2 rows layout */}
             <div className="md:hidden">
               {serviziAttivi.map((servizio, index) => (
-                <div
-                  key={servizio.id}
-                  className={`px-6 py-3 hover:bg-gray-50 transition-colors ${
-                    index !== serviziAttivi.length - 1 ? 'border-b' : ''
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    {/* Nome + Prezzo */}
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-900">{servizio.nome}</div>
-                      <div className="font-semibold text-gray-900 text-sm mt-0.5">
-                        {formatPrezzo(servizio.prezzo)}
-                      </div>
+                <div key={servizio.id}>
+                  {editingServizio?.id === servizio.id ? (
+                    <div className="p-6 border-b">
+                      <ServizioEditModal
+                        servizio={servizio}
+                        onClose={() => setEditingServizio(null)}
+                        onSuccess={() => {
+                          setEditingServizio(null)
+                          loadServizi()
+                        }}
+                      />
                     </div>
+                  ) : (
+                    <div
+                      className={`px-6 py-3 hover:bg-gray-50 transition-colors ${
+                        index !== serviziAttivi.length - 1 ? 'border-b' : ''
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        {/* Nome + Prezzo */}
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900">{servizio.nome}</div>
+                          <div className="font-semibold text-gray-900 text-sm mt-0.5">
+                            {formatPrezzo(servizio.prezzo)}
+                          </div>
+                        </div>
 
-                    {/* Durata + Bottoni */}
-                    <div className="flex items-center gap-2">
-                      <div className="text-base text-gray-600 whitespace-nowrap">
-                        {servizio.durata} min
-                      </div>
-                      <div className="flex gap-1">
-                        <button
-                          onClick={() => setEditingServizio(servizio)}
-                          className="px-2 py-1 text-xs bg-orange-500 hover:bg-orange-600 text-white rounded font-medium"
-                        >
-                          Mod
-                        </button>
-                        <button
-                          onClick={() => handleDelete(servizio.id, servizio.nome)}
-                          className="px-2 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded font-medium"
-                        >
-                          Elim
-                        </button>
+                        {/* Durata + Bottoni */}
+                        <div className="flex items-center gap-2">
+                          <div className="text-base text-gray-600 whitespace-nowrap">
+                            {servizio.durata} min
+                          </div>
+                          <div className="flex gap-1">
+                            <button
+                              onClick={() => setEditingServizio(servizio)}
+                              className="px-2 py-1 text-xs bg-orange-500 hover:bg-orange-600 text-white rounded font-medium"
+                            >
+                              Mod
+                            </button>
+                            <button
+                              onClick={() => handleDelete(servizio.id, servizio.nome)}
+                              className="px-2 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded font-medium"
+                            >
+                              Elim
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -181,18 +209,6 @@ export default function ServiziPage() {
           </div>
         )}
       </div>
-
-      {/* Edit Modal */}
-      {editingServizio && (
-        <ServizioEditModal
-          servizio={editingServizio}
-          onClose={() => setEditingServizio(null)}
-          onSuccess={() => {
-            setEditingServizio(null)
-            loadServizi()
-          }}
-        />
-      )}
     </div>
   )
 }

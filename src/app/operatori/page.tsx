@@ -86,48 +86,61 @@ export default function OperatoriPage() {
               <div className="space-y-2">
                 <h2 className="text-2xl font-semibold text-gray-900 px-2">Operatori Attivi</h2>
                 {operatoriAttivi.map((operatore) => (
-                  <div
-                    key={operatore.id}
-                    className="bg-white rounded-lg shadow p-6"
-                    style={{ borderLeft: `4px solid ${operatore.colore || '#3B82F6'}` }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4 flex-1">
-                        <div
-                          className="w-10 h-10 rounded-full flex-shrink-0"
-                          style={{ backgroundColor: operatore.colore || '#3B82F6' }}
-                        />
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-lg text-gray-900">
-                            {operatore.cognome} {operatore.nome}
-                          </h3>
-                          <p className="text-base text-gray-600">
-                            {operatore.colore || 'Nessun colore impostato'}
-                          </p>
+                  <div key={operatore.id} className="space-y-2">
+                    {editingOperatore?.id === operatore.id ? (
+                      <OperatoreEditModal
+                        operatore={operatore}
+                        onClose={() => setEditingOperatore(null)}
+                        onSuccess={() => {
+                          setEditingOperatore(null)
+                          loadOperatori()
+                          router.refresh()
+                        }}
+                      />
+                    ) : (
+                      <div
+                        className="bg-white rounded-lg shadow p-6"
+                        style={{ borderLeft: `4px solid ${operatore.colore || '#3B82F6'}` }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4 flex-1">
+                            <div
+                              className="w-10 h-10 rounded-full flex-shrink-0"
+                              style={{ backgroundColor: operatore.colore || '#3B82F6' }}
+                            />
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-lg text-gray-900">
+                                {operatore.cognome} {operatore.nome}
+                              </h3>
+                              <p className="text-base text-gray-600">
+                                {operatore.colore || 'Nessun colore impostato'}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => setEditingOperatore(operatore)}
+                              className="px-3 py-1.5 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 transition-colors"
+                            >
+                              Modifica
+                            </button>
+                            <button
+                              onClick={() => handleToggleAttivo(operatore.id, operatore.attivo)}
+                              className="px-3 py-1.5 bg-orange-500 text-white rounded text-xs font-medium hover:bg-orange-600 transition-colors"
+                            >
+                              Disattiva
+                            </button>
+                            <button
+                              onClick={() => handleDelete(operatore.id, `${operatore.cognome} ${operatore.nome}`)}
+                              className="px-3 py-1.5 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700 transition-colors"
+                            >
+                              Elimina
+                            </button>
+                          </div>
                         </div>
                       </div>
-
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => setEditingOperatore(operatore)}
-                          className="px-3 py-1.5 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 transition-colors"
-                        >
-                          Modifica
-                        </button>
-                        <button
-                          onClick={() => handleToggleAttivo(operatore.id, operatore.attivo)}
-                          className="px-3 py-1.5 bg-orange-500 text-white rounded text-xs font-medium hover:bg-orange-600 transition-colors"
-                        >
-                          Disattiva
-                        </button>
-                        <button
-                          onClick={() => handleDelete(operatore.id, `${operatore.cognome} ${operatore.nome}`)}
-                          className="px-3 py-1.5 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700 transition-colors"
-                        >
-                          Elimina
-                        </button>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -184,19 +197,6 @@ export default function OperatoriPage() {
           </>
         )}
       </div>
-
-      {/* Modal di modifica */}
-      {editingOperatore && (
-        <OperatoreEditModal
-          operatore={editingOperatore}
-          onClose={() => setEditingOperatore(null)}
-          onSuccess={() => {
-            setEditingOperatore(null)
-            loadOperatori()
-            router.refresh()
-          }}
-        />
-      )}
     </div>
   )
 }

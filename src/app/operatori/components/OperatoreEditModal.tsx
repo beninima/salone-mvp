@@ -56,19 +56,18 @@ export default function OperatoreEditModal({
   }
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-6"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h2 className="text-2xl font-semibold mb-4">Modifica Operatore</h2>
+    <div className="bg-white rounded-lg shadow p-6">
+      <form onSubmit={handleSubmit} className="space-y-3">
+        {/* Header con titolo */}
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-base font-semibold text-gray-900">Modifica Operatore</h2>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
+        {/* Form compatto in griglia */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Nome */}
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Nome *
             </label>
             <input
@@ -76,12 +75,14 @@ export default function OperatoreEditModal({
               name="nome"
               defaultValue={operatore.nome}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Mario"
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
+          {/* Cognome */}
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Cognome *
             </label>
             <input
@@ -89,13 +90,15 @@ export default function OperatoreEditModal({
               name="cognome"
               defaultValue={operatore.cognome}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Rossi"
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
+          {/* Colore */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
-              Colore Agenda
+              Colore Agenda *
             </label>
             <div className="flex items-center gap-1">
               {/* Preview colore selezionato */}
@@ -122,25 +125,26 @@ export default function OperatoreEditModal({
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="flex gap-2 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300"
-            >
-              Annulla
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
-            >
-              {loading ? 'Salvataggio...' : 'Salva'}
-            </button>
-          </div>
-        </form>
-      </div>
+        {/* Pulsanti azione inline a destra */}
+        <div className="flex justify-end gap-2 pt-2 border-t">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-3 py-1 text-xs bg-gray-200 text-gray-800 rounded font-medium hover:bg-gray-300"
+          >
+            ✕ Annulla
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-3 py-1 text-xs bg-blue-600 text-white rounded font-medium hover:bg-blue-700 disabled:opacity-50"
+          >
+            {loading ? '⏳ Salvataggio...' : '💾 Salva'}
+          </button>
+        </div>
+      </form>
     </div>
   )
 }
