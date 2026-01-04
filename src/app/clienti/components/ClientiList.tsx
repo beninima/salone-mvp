@@ -40,7 +40,7 @@ type Cliente = {
   interventi?: Intervento[]
 }
 
-export default function ClientiList({ clienti }: { clienti: Cliente[] }) {
+export default function ClientiList({ clienti, onClienteUpdated }: { clienti: Cliente[], onClienteUpdated?: () => void }) {
   const router = useRouter()
   const [editingId, setEditingId] = useState<number | null>(null)
   const [deletingId, setDeletingId] = useState<number | null>(null)
@@ -101,7 +101,7 @@ export default function ClientiList({ clienti }: { clienti: Cliente[] }) {
                 <ClienteEditForm
                   cliente={cliente}
                   onCancel={() => setEditingId(null)}
-                  onSuccess={() => router.refresh()}
+                  onSuccess={onClienteUpdated}
                 />
               </div>
             ) : (
@@ -215,7 +215,7 @@ export default function ClientiList({ clienti }: { clienti: Cliente[] }) {
                 <ClienteEditForm
                   cliente={cliente}
                   onCancel={() => setEditingId(null)}
-                  onSuccess={() => router.refresh()}
+                  onSuccess={onClienteUpdated}
                 />
               </div>
             ) : (

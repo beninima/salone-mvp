@@ -22,13 +22,14 @@ export default function ClientiPage() {
   const [clienti, setClienti] = useState<Cliente[]>([])
   const [loading, setLoading] = useState(true)
 
+  const loadClienti = async () => {
+    setLoading(true)
+    const result = await getClienti()
+    setClienti(result.success ? result.data : [])
+    setLoading(false)
+  }
+
   useEffect(() => {
-    async function loadClienti() {
-      setLoading(true)
-      const result = await getClienti()
-      setClienti(result.success ? result.data : [])
-      setLoading(false)
-    }
     loadClienti()
   }, [])
 
@@ -57,7 +58,7 @@ export default function ClientiPage() {
             <p className="text-gray-500">Caricamento...</p>
           </div>
         ) : (
-          <ClientiList clienti={clienti || []} />
+          <ClientiList clienti={clienti || []} onClienteUpdated={loadClienti} />
         )}
       </div>
     </div>
