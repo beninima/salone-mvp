@@ -95,19 +95,22 @@ export default function DateSelector({
 
   const handleNavigate = (amount: number) => {
     const url = getDateUrl(amount)
-    router.push(url)
+    // Force full page reload to ensure navigation works
+    window.location.href = url
   }
 
   const handleToday = () => {
     const url = getTodayUrl()
-    router.push(url)
+    // Force full page reload to ensure navigation works
+    window.location.href = url
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 sm:gap-3">
       <button
         onClick={() => handleNavigate(-1)}
-        className="px-3 py-2 bg-gray-200 rounded-lg font-medium hover:bg-gray-300"
+        className="px-4 py-3 sm:px-6 sm:py-4 bg-gray-200 rounded-lg font-bold hover:bg-gray-300 shadow-sm"
+        style={{ fontSize: 'clamp(1.25rem, 2.5vw, 2rem)' }}
       >
         ←
       </button>
@@ -134,14 +137,16 @@ export default function DateSelector({
 
       <button
         onClick={() => handleNavigate(1)}
-        className="px-3 py-2 bg-gray-200 rounded-lg font-medium hover:bg-gray-300"
+        className="px-4 py-3 sm:px-6 sm:py-4 bg-gray-200 rounded-lg font-bold hover:bg-gray-300 shadow-sm"
+        style={{ fontSize: 'clamp(1.25rem, 2.5vw, 2rem)' }}
       >
         →
       </button>
 
       <button
         onClick={handleToday}
-        className="px-3 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+        className="px-4 py-3 sm:px-6 sm:py-4 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 shadow-md"
+        style={{ fontSize: 'clamp(1rem, 2.5vw, 1.5rem)' }}
       >
         Oggi
       </button>

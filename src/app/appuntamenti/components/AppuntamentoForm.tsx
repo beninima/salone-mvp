@@ -42,6 +42,7 @@ export default function AppuntamentoForm({
   const [showNuovoClienteModal, setShowNuovoClienteModal] = useState(false)
   const [selectedClienteId, setSelectedClienteId] = useState<string>('')
   const [newlyCreatedCliente, setNewlyCreatedCliente] = useState<Cliente | null>(null)
+  const [selectedTime, setSelectedTime] = useState('')
   const router = useRouter()
 
   // Sort clienti alphabetically by cognome, including newly created client
@@ -140,20 +141,70 @@ export default function AppuntamentoForm({
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-semibold text-lg hover:bg-green-700"
+        className="w-full px-6 py-4 sm:px-8 sm:py-5 md:px-10 md:py-7 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 shadow-lg hover:shadow-xl transition-all"
+        style={{ fontSize: 'clamp(1.25rem, 3vw, 2rem)' }}
       >
         + Nuovo Appuntamento
       </button>
     )
   }
 
-  return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-2xl font-semibold mb-4">Nuovo Appuntamento</h2>
+  // Servizi rapidi comuni
+  const servizioTaglio = servizi.find(s => s.nome.toLowerCase().includes('taglio'))
+  const servizioColore = servizi.find(s => s.nome.toLowerCase().includes('colore') || s.nome.toLowerCase().includes('piega'))
+  const servizioCompleto = servizi.find(s => s.nome.toLowerCase().includes('completo'))
 
-      <form onSubmit={handleSubmit} className="space-y-3">
+  const selectServizioRapido = (servizioId: string | undefined) => {
+    if (!servizioId) return
+    const servizio = servizi.find(s => s.id === servizioId)
+    if (servizio) {
+      setSelectedServices([{
+        servizioId: servizio.id,
+        durata: servizio.durata
+      }])
+    }
+  }
+
+  // Format date display for header
+  const formatHeaderDate = () => {
+    const [year, month, day] = selectedDate.split('-')
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+    const weekday = date.toLocaleDateString('it-IT', { weekday: 'short' })
+    const dayMonth = date.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })
+    return `${weekday.charAt(0).toUpperCase() + weekday.slice(1)} ${dayMonth}`
+  }
+
+  // Calcola orario di fine
+  const calculateEndTime = () => {
+    if (!selectedTime || totalDuration === 0) return ''
+
+    const [hours, minutes] = selectedTime.split(':').map(Number)
+    const totalMinutes = hours * 60 + minutes + totalDuration
+    const endHours = Math.floor(totalMinutes / 60) % 24
+    const endMinutes = totalMinutes % 60
+
+    return `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`
+  }
+
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-6">
+      {/* Header informativo con data e ora */}
+      <div className="flex justify-between items-center mb-4 pb-3 border-b border-blue-100">
+        <h1 className="text-xl font-bold text-blue-800">
+          ➕ Nuovo · {formatHeaderDate()}{selectedTime && ` · ${selectedTime}`}
+        </h1>
+        <button
+          type="button"
+          onClick={() => setIsOpen(false)}
+          className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+        >
+          ×
+        </button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-base font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
             Cliente *
           </label>
           <select
@@ -161,7 +212,7 @@ export default function AppuntamentoForm({
             value={selectedClienteId}
             required
             onChange={handleClienteChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base"
           >
             <option value="">Seleziona cliente</option>
             {sortedClienti.map((cliente) => (
@@ -174,13 +225,13 @@ export default function AppuntamentoForm({
         </div>
 
         <div>
-          <label className="block text-base font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
             Operatore *
           </label>
           <select
             name="operatoreId"
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base"
           >
             <option value="">Seleziona operatore</option>
             {operatori.map((operatore) => (
@@ -191,35 +242,78 @@ export default function AppuntamentoForm({
           </select>
         </div>
 
-        <div>
-          <label className="block text-base font-medium text-gray-700 mb-1">
-            Data *
-          </label>
-          <input
-            type="date"
-            name="data"
-            defaultValue={selectedDate}
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Data *
+            </label>
+            <input
+              type="date"
+              name="data"
+              defaultValue={selectedDate}
+              required
+              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              Ora * {selectedTime && totalDuration > 0 && (
+                <span className="text-xs text-gray-500 ml-2">
+                  (Fine: {calculateEndTime()})
+                </span>
+              )}
+            </label>
+            <input
+              type="time"
+              name="ora"
+              value={selectedTime}
+              onChange={(e) => setSelectedTime(e.target.value)}
+              required
+              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base"
+            />
+          </div>
         </div>
 
         <div>
-          <label className="block text-base font-medium text-gray-700 mb-1">
-            Ora *
-          </label>
-          <input
-            type="time"
-            name="ora"
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-
-        <div>
-          <label className="block text-base font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
             Servizi *
           </label>
+
+          {/* Icone rapide servizi */}
+          <div className="grid grid-cols-3 gap-2 mb-3">
+            {servizioTaglio && (
+              <button
+                type="button"
+                onClick={() => selectServizioRapido(servizioTaglio.id)}
+                className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl flex flex-col items-center transition-colors border border-blue-200"
+              >
+                <span className="text-2xl mb-1">✂️</span>
+                <span className="text-xs font-medium text-blue-800">Taglio</span>
+              </button>
+            )}
+            {servizioColore && (
+              <button
+                type="button"
+                onClick={() => selectServizioRapido(servizioColore.id)}
+                className="p-3 bg-purple-50 hover:bg-purple-100 rounded-xl flex flex-col items-center transition-colors border border-purple-200"
+              >
+                <span className="text-2xl mb-1">🎨</span>
+                <span className="text-xs font-medium text-purple-800">Colore</span>
+              </button>
+            )}
+            {servizioCompleto && (
+              <button
+                type="button"
+                onClick={() => selectServizioRapido(servizioCompleto.id)}
+                className="p-3 bg-emerald-50 hover:bg-emerald-100 rounded-xl flex flex-col items-center transition-colors border border-emerald-200"
+              >
+                <span className="text-2xl mb-1">✨</span>
+                <span className="text-xs font-medium text-emerald-800">Completo</span>
+              </button>
+            )}
+          </div>
+
           <div className="space-y-3">
             {selectedServices.map((service, index) => {
               const selectedServizio = servizi.find(s => s.id === service.servizioId)
@@ -275,30 +369,54 @@ export default function AppuntamentoForm({
               + Altro Servizio
             </button>
 
+            {/* Preset durata rapidi */}
+            <div className="flex gap-2 mt-2">
+              <span className="text-xs font-medium text-gray-600 self-center">Durata rapida:</span>
+              {[30, 60, 90].map(mins => (
+                <button
+                  key={mins}
+                  type="button"
+                  onClick={() => {
+                    if (selectedServices[0]) {
+                      setSelectedServices([{
+                        ...selectedServices[0],
+                        durata: mins
+                      }])
+                    }
+                  }}
+                  className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-md text-xs font-medium text-gray-700 border border-gray-300"
+                >
+                  {mins} min
+                </button>
+              ))}
+            </div>
+
             {totalDuration > 0 && (
-              <div className="mt-2 p-3 bg-blue-50 rounded-lg">
-                <div className="text-sm font-medium text-blue-900">
-                  Durata totale: {totalDuration} minuti
+              <div className="mt-2 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                <div className="text-sm font-semibold text-blue-900">
+                  ⏱️ Durata totale: {totalDuration} minuti
+                  {selectedTime && ` (${selectedTime} - ${calculateEndTime()})`}
                 </div>
               </div>
             )}
           </div>
         </div>
 
-        <div className="flex gap-2 pt-2">
+        {/* Pulsanti action professionali */}
+        <div className="flex gap-3 pt-4 mt-6 border-t border-gray-200">
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            className="flex-1 px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300"
+            className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-xl font-medium transition-colors"
           >
-            Annulla
+            ❌ Annulla
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Creazione...' : 'Crea'}
+            {loading ? '⏳ Salvataggio...' : '💾 Salva Appuntamento'}
           </button>
         </div>
       </form>

@@ -65,7 +65,8 @@ export default function OperatoreForm({ onOperatoreCreated }: OperatoreFormProps
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-semibold text-lg hover:bg-green-700"
+        className="w-full px-6 py-4 sm:px-8 sm:py-5 md:px-10 md:py-7 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 shadow-lg hover:shadow-xl transition-all"
+        style={{ fontSize: 'clamp(1.25rem, 3vw, 2rem)' }}
       >
         + Aggiungi Operatore
       </button>

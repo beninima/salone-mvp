@@ -78,26 +78,37 @@ export default function AppuntamentiWeekView({
     return `${year}-${month}-${day}`
   }
 
-  // Genera i 7 giorni della settimana (Lun-Dom)
+  // Genera i 7 giorni della settimana (Lun-Dom) basandosi su weekData
   const weekDays = useMemo(() => {
     const days = []
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
 
-    // Trova il lunedì della settimana
-    const dayOfWeek = today.getDay()
-    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
-    const start = new Date(today)
-    start.setDate(today.getDate() + diff)
+    // Se weekData è disponibile, usa quello
+    if (weekData?.startOfWeek) {
+      const start = new Date(weekData.startOfWeek)
+      for (let i = 0; i < 7; i++) {
+        const day = new Date(start)
+        day.setDate(start.getDate() + i)
+        days.push(day)
+      }
+    } else {
+      // Fallback: usa settimana corrente
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
 
-    for (let i = 0; i < 7; i++) {
-      const day = new Date(start)
-      day.setDate(start.getDate() + i)
-      days.push(day)
+      const dayOfWeek = today.getDay()
+      const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
+      const start = new Date(today)
+      start.setDate(today.getDate() + diff)
+
+      for (let i = 0; i < 7; i++) {
+        const day = new Date(start)
+        day.setDate(start.getDate() + i)
+        days.push(day)
+      }
     }
 
     return days
-  }, [])
+  }, [weekData])
 
   // Raggruppa appuntamenti per GIORNO + OPERATORE (nuova struttura)
   const appuntamentiGriglia = useMemo(() => {
@@ -226,18 +237,32 @@ export default function AppuntamentiWeekView({
     )
   }
 
-  return (
-    <div className="space-y-3">
-      <h2 className="text-2xl font-semibold text-gray-900">
-        Vista Settimanale ({appuntamenti.length} {appuntamenti.length === 1 ? 'appuntamento' : 'appuntamenti'})
-      </h2>
+  // Calcola riepilogo settimanale
+  const totaleDurata = appuntamenti.reduce((sum, app) => sum + app.durata, 0)
 
-      {/* GRIGLIA ALLINEATA: Giorni (orizzontale) x Operatori (verticale) */}
-      <div className="bg-white rounded-lg shadow overflow-x-auto">
-        <div className="min-w-[800px]">
-          {/* Header giorni */}
-          <div className="grid grid-cols-8 border-b bg-gray-50 sticky top-0 z-10">
-            <div className="p-2 border-r font-semibold text-xs text-gray-700">
+  // Formatta range settimana
+  const weekRange = weekData
+    ? `${new Date(weekData.startOfWeek).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })} - ${new Date(weekData.endOfWeek).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}`
+    : ''
+
+  return (
+    <div className="space-y-0">
+      {/* Header compatto verde con riepilogo */}
+      <div className="flex items-center justify-between p-3 sm:p-4 md:p-5 bg-emerald-600 text-white rounded-t-lg">
+        <h1 className="text-base sm:text-lg md:text-xl font-bold">
+          Settimana {weekRange}
+        </h1>
+        <div className="text-xs sm:text-sm md:text-base font-medium">
+          {appuntamenti.length} {appuntamenti.length === 1 ? 'appuntamento' : 'appuntamenti'} / {totaleDurata}min
+        </div>
+      </div>
+
+      {/* GRIGLIA AD ALTA DENSITÀ */}
+      <div className="bg-white rounded-b-lg shadow overflow-x-auto">
+        <div className="min-w-[800px] h-[50vh] sm:h-[65vh] md:h-[75vh] flex flex-col">
+          {/* Header giorni - super compatto */}
+          <div className="grid grid-cols-8 gap-px bg-gray-200 flex-shrink-0">
+            <div className="bg-gray-100 p-2 sm:p-2.5 md:p-3 text-xs sm:text-sm md:text-base font-semibold text-gray-700 border">
               Operatore
             </div>
             {weekDays.map((day) => {
@@ -245,66 +270,78 @@ export default function AppuntamentiWeekView({
               return (
                 <div
                   key={getLocalDateKey(day)}
-                  className={`p-2 text-center border-r ${
-                    header.isToday ? 'bg-blue-100 font-bold' : ''
+                  className={`bg-white p-2 sm:p-2.5 md:p-3 text-center border text-xs sm:text-sm md:text-base font-semibold ${
+                    header.isToday ? 'bg-blue-100 ring-2 ring-blue-300' : 'text-gray-700'
                   }`}
                 >
-                  <div className="text-[10px] uppercase text-gray-600">{header.weekday}</div>
-                  <div className="text-sm font-bold">{header.day}</div>
-                  <div className="text-[9px] text-gray-500">{header.month}</div>
+                  <div className="uppercase text-xs sm:text-sm">{header.weekday}</div>
+                  <div className="text-base sm:text-lg md:text-xl font-bold">{header.day}</div>
                 </div>
               )
             })}
           </div>
 
-          {/* Righe operatori */}
-          {operatori.map((operatore) => (
-            <div key={operatore.id} className="grid grid-cols-8 border-b hover:bg-gray-50">
-              {/* Colonna nome operatore */}
-              <div
-                className="p-2 border-r flex items-center gap-2"
-                style={{ backgroundColor: `${operatore.colore}15` }}
-              >
+          {/* Righe operatori - flex-1 per riempire spazio */}
+          <div className="flex-1 overflow-y-auto">
+            {operatori.map((operatore) => (
+              <div key={operatore.id} className="grid grid-cols-8 gap-px bg-gray-200 h-full">
+                {/* Colonna nome operatore */}
                 <div
-                  className="w-3 h-3 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: operatore.colore || '#3B82F6' }}
-                />
-                <div className="text-xs font-semibold truncate">
-                  {operatore.cognome} {operatore.nome}
-                </div>
-              </div>
-
-              {/* Colonne giorni */}
-              {weekDays.map((day) => {
-                const dateKey = getLocalDateKey(day)
-                const dayApps = appuntamentiGriglia[dateKey]?.[operatore.id] || []
-
-                return (
+                  className="bg-white p-2 sm:p-2.5 md:p-3 border flex items-center gap-2"
+                  style={{ backgroundColor: `${operatore.colore}10` }}
+                >
                   <div
-                    key={dateKey}
-                    className="p-1 border-r min-h-[80px] space-y-1"
-                  >
-                    {dayApps.map((app) => (
-                      <button
-                        key={app.id}
-                        onClick={() => setSelectedApp(app)}
-                        className={`w-full text-left p-1.5 rounded border text-[10px] ${getStatoColor(app.stato)} hover:shadow-md transition-shadow`}
-                        style={{
-                          borderLeftWidth: '3px',
-                          borderLeftColor: operatore.colore || '#3B82F6'
-                        }}
-                      >
-                        <div className="font-bold">{formatTime(app.dataOra)}</div>
-                        <div className="truncate text-gray-700">{app.cliente.cognome}</div>
-                        <div className="truncate text-gray-500">{app.servizi.map(s => s.servizio.nome).join(', ')}</div>
-                        <div className="text-gray-400">{app.durata}min</div>
-                      </button>
-                    ))}
+                    className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: operatore.colore || '#3B82F6' }}
+                  />
+                  <div className="text-xs sm:text-sm md:text-base font-semibold truncate">
+                    {operatore.cognome} {operatore.nome}
                   </div>
-                )
-              })}
-            </div>
-          ))}
+                </div>
+
+                {/* Colonne giorni */}
+                {weekDays.map((day) => {
+                  const dateKey = getLocalDateKey(day)
+                  const dayApps = appuntamentiGriglia[dateKey]?.[operatore.id] || []
+                  const header = formatDayHeader(day)
+
+                  return (
+                    <div
+                      key={dateKey}
+                      className={`bg-white border min-h-[32px] sm:min-h-[40px] md:min-h-[48px] p-1 relative ${
+                        header.isToday ? 'bg-blue-50/50 ring-1 ring-blue-200' : ''
+                      }`}
+                    >
+                      {dayApps.map((app) => (
+                        <button
+                          key={app.id}
+                          onClick={() => setSelectedApp(app)}
+                          className={`w-full h-full flex flex-col justify-center p-2 sm:p-2.5 md:p-3 bg-white/95 backdrop-blur-sm shadow-lg sm:shadow-xl border-2 rounded-lg hover:shadow-2xl hover:scale-105 transition-all ${getStatoColor(app.stato)}`}
+                          style={{
+                            borderColor: operatore.colore || '#3B82F6',
+                            borderLeftWidth: '3px'
+                          }}
+                        >
+                          <div className="font-bold text-sm sm:text-base md:text-lg text-gray-900 mb-0.5 sm:mb-1">
+                            {app.cliente.cognome.toUpperCase()}
+                          </div>
+                          <div className="text-xs sm:text-sm md:text-base text-gray-600 flex items-start gap-1">
+                            <span className="text-xs sm:text-sm">✂️</span>
+                            <div className="flex-1">
+                              <div className="line-clamp-1">{app.servizi.map(s => s.servizio.nome).join(', ')}</div>
+                              <div className="text-[10px] sm:text-xs text-gray-500">
+                                {formatTime(app.dataOra)} • {app.durata}min
+                              </div>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )
+                })}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

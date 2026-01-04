@@ -134,34 +134,27 @@ export default async function HomePage() {
       {/* Quick Actions */}
       <div className="px-4 py-6">
         <h2 className="text-2xl font-semibold text-gray-900 mb-3">Azioni Rapide</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="flex gap-3 overflow-x-auto">
           <Link
             href="/clienti"
-            className="bg-white rounded-lg shadow p-6 text-center hover:shadow-md transition-shadow"
+            className="flex-1 min-w-[120px] bg-white rounded-lg shadow p-4 text-center hover:shadow-md transition-shadow"
           >
-            <div className="text-2xl mb-2">👤</div>
-            <div className="text-base font-medium text-gray-900">Nuovo Cliente</div>
+            <div className="text-3xl mb-2">👤</div>
+            <div className="text-sm font-medium text-gray-900">Nuovo Cliente</div>
           </Link>
           <Link
             href="/appuntamenti"
-            className="bg-white rounded-lg shadow p-6 text-center hover:shadow-md transition-shadow"
+            className="flex-1 min-w-[120px] bg-white rounded-lg shadow p-4 text-center hover:shadow-md transition-shadow"
           >
-            <div className="text-2xl mb-2">📅</div>
-            <div className="text-base font-medium text-gray-900">Nuovo Appuntamento</div>
-          </Link>
-          <Link
-            href="/interventi"
-            className="bg-white rounded-lg shadow p-6 text-center hover:shadow-md transition-shadow"
-          >
-            <div className="text-2xl mb-2">✂️</div>
-            <div className="text-base font-medium text-gray-900">Nuovo Intervento</div>
+            <div className="text-3xl mb-2">📅</div>
+            <div className="text-sm font-medium text-gray-900">Nuovo Appuntamento</div>
           </Link>
           <Link
             href="/prodotti"
-            className="bg-white rounded-lg shadow p-6 text-center hover:shadow-md transition-shadow"
+            className="flex-1 min-w-[120px] bg-white rounded-lg shadow p-4 text-center hover:shadow-md transition-shadow"
           >
-            <div className="text-2xl mb-2">🧴</div>
-            <div className="text-base font-medium text-gray-900">Gestisci Prodotti</div>
+            <div className="text-3xl mb-2">🧴</div>
+            <div className="text-sm font-medium text-gray-900">Gestisci Prodotti</div>
           </Link>
         </div>
       </div>

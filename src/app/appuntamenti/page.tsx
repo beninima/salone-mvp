@@ -6,6 +6,7 @@ import AppuntamentiWeekView from './components/AppuntamentiWeekView'
 import AppuntamentoForm from './components/AppuntamentoForm'
 import DateSelector from './components/DateSelector'
 import ViewToggle from './components/ViewToggle'
+import DashboardStats from './components/DashboardStats'
 
 export default async function AppuntamentiPage({
   searchParams
@@ -30,24 +31,42 @@ export default async function AppuntamentiPage({
   const operatori = operatoriResult.success ? operatoriResult.data : []
   const servizi = serviziResult.success ? serviziResult.data : []
 
-  // Per la vista settimanale, ottieni le date di inizio e fine settimana
-  const weekData = null
+  // Per la vista settimanale, calcola le date di inizio e fine settimana
+  let weekData = null
+  if (view === 'week') {
+    const [year, month, day] = selectedDate.split('-').map(Number)
+    const selectedDateObj = new Date(year, month - 1, day)
+
+    // Trova il lunedì della settimana
+    const dayOfWeek = selectedDateObj.getDay()
+    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
+    const startOfWeek = new Date(selectedDateObj)
+    startOfWeek.setDate(selectedDateObj.getDate() + diff)
+    startOfWeek.setHours(0, 0, 0, 0)
+
+    // Trova la domenica della settimana
+    const endOfWeek = new Date(startOfWeek)
+    endOfWeek.setDate(startOfWeek.getDate() + 6)
+    endOfWeek.setHours(23, 59, 59, 999)
+
+    weekData = { startOfWeek, endOfWeek }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Header */}
+      {/* Header - più compatto */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="px-4 py-4">
-          <div className="flex justify-between items-center mb-3">
-            <h1 className="text-3xl font-bold text-gray-900">Appuntamenti</h1>
+        <div className="px-4 py-3">
+          <div className="flex justify-between items-center mb-2">
+            <h1 className="text-2xl font-bold text-gray-900">Appuntamenti</h1>
             <ViewToggle currentView={view} />
           </div>
           <DateSelector selectedDate={selectedDate} view={view} weekData={weekData} />
         </div>
       </div>
 
-      {/* Content */}
-      <div className="px-4 py-4 space-y-4">
+      {/* Content - spazio ridotto */}
+      <div className="px-4 py-3 space-y-3">
         {/* Form per nuovo appuntamento */}
         <AppuntamentoForm
           clienti={clienti || []}
@@ -56,20 +75,16 @@ export default async function AppuntamentiPage({
           selectedDate={selectedDate}
         />
 
-        {/* Agenda */}
-        {view === 'week' ? (
+        {/* Dashboard Stats */}
+        <DashboardStats appuntamenti={appuntamenti || []} />
+
+        {/* Calendario Settimanale */}
+        {view === 'week' && (
           <AppuntamentiWeekView
             appuntamenti={appuntamenti || []}
             operatori={operatori || []}
             weekData={weekData}
             clienti={clienti || []}
-            servizi={servizi || []}
-          />
-        ) : (
-          <AppuntamentiAgenda
-            appuntamenti={appuntamenti || []}
-            clienti={clienti || []}
-            operatori={operatori || []}
             servizi={servizi || []}
           />
         )}
