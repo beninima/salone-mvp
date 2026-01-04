@@ -31,7 +31,9 @@
       "Bash(npm run db:seed:*)",
       "Bash(git commit:*)",
       "Bash(git restore:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(node verify-migration.js:*)",
+      "Bash(fuser:*)"
     ]
   }
 }

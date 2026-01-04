@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { deleteAppuntamento, updateAppuntamentoStato } from '@/app/actions/appuntamenti'
-import ManageServicesModal from './ManageServicesModal'
+import ServicesMultiSelect from './ServicesMultiSelect'
 
 type Operatore = {
   id: string
@@ -49,7 +49,6 @@ export default function AppuntamentiWeekView({
   weekData: WeekData
 }) {
   const [selectedApp, setSelectedApp] = useState<Appuntamento | null>(null)
-  const [managingServicesApp, setManagingServicesApp] = useState<Appuntamento | null>(null)
   const [actioningId, setActioningId] = useState<number | null>(null)
   const router = useRouter()
 
@@ -347,15 +346,14 @@ export default function AppuntamentiWeekView({
             {/* Azioni */}
             <div className="space-y-3">
               <div className="flex gap-2 items-center flex-wrap">
-                <button
-                  onClick={() => {
-                    setManagingServicesApp(selectedApp)
+                <ServicesMultiSelect
+                  appuntamentoId={selectedApp.id}
+                  currentServices={selectedApp.servizi}
+                  onSuccess={() => {
                     setSelectedApp(null)
+                    router.refresh()
                   }}
-                  className="px-3 py-1.5 bg-purple-600 text-white rounded text-xs font-medium hover:bg-purple-700"
-                >
-                  ⚙️ Gestisci Servizi
-                </button>
+                />
 
                 <button
                   onClick={() => router.push(`/clienti/${selectedApp.cliente.id}`)}
@@ -411,19 +409,6 @@ export default function AppuntamentiWeekView({
             </div>
           </div>
         </div>
-      )}
-
-      {/* Manage Services Modal */}
-      {managingServicesApp && (
-        <ManageServicesModal
-          appuntamentoId={managingServicesApp.id}
-          currentServices={managingServicesApp.servizi}
-          onClose={() => setManagingServicesApp(null)}
-          onSuccess={() => {
-            setManagingServicesApp(null)
-            router.refresh()
-          }}
-        />
       )}
     </div>
   )
