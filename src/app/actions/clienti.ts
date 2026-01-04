@@ -107,6 +107,7 @@ export async function updateCliente(id: number, formData: FormData) {
     })
 
     revalidatePath('/clienti')
+    revalidatePath(`/clienti/${id}`)
     return { success: true }
   } catch (error) {
     return { success: false, error: 'Errore nell\'aggiornamento del cliente' }

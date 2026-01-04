@@ -13,10 +13,12 @@ type Cliente = {
 
 export default function ClienteEditForm({
   cliente,
-  onCancel
+  onCancel,
+  onSuccess
 }: {
   cliente: Cliente
   onCancel: () => void
+  onSuccess?: () => void
 }) {
   const [loading, setLoading] = useState(false)
 
@@ -30,6 +32,9 @@ export default function ClienteEditForm({
     setLoading(false)
 
     if (result.success) {
+      if (onSuccess) {
+        onSuccess()
+      }
       onCancel()
     } else {
       alert(result.error)

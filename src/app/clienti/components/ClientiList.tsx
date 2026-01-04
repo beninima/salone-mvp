@@ -101,6 +101,7 @@ export default function ClientiList({ clienti }: { clienti: Cliente[] }) {
                 <ClienteEditForm
                   cliente={cliente}
                   onCancel={() => setEditingId(null)}
+                  onSuccess={() => router.refresh()}
                 />
               </div>
             ) : (
@@ -214,6 +215,7 @@ export default function ClientiList({ clienti }: { clienti: Cliente[] }) {
                 <ClienteEditForm
                   cliente={cliente}
                   onCancel={() => setEditingId(null)}
+                  onSuccess={() => router.refresh()}
                 />
               </div>
             ) : (
