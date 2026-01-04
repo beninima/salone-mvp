@@ -127,15 +127,15 @@ export default function ServiziPage() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => setEditingServizio(servizio)}
-                          className="px-3 py-1 text-xs bg-orange-500 hover:bg-orange-600 text-white rounded font-medium transition-colors"
+                          className="px-3 py-1.5 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 transition-colors"
                         >
-                          Mod
+                          Modifica
                         </button>
                         <button
                           onClick={() => handleDelete(servizio.id, servizio.nome)}
-                          className="px-3 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded font-medium transition-colors"
+                          className="px-3 py-1.5 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700 transition-colors"
                         >
-                          Elim
+                          Elimina
                         </button>
                       </div>
                     </div>
@@ -182,15 +182,15 @@ export default function ServiziPage() {
                           <div className="flex gap-1">
                             <button
                               onClick={() => setEditingServizio(servizio)}
-                              className="px-2 py-1 text-xs bg-orange-500 hover:bg-orange-600 text-white rounded font-medium"
+                              className="px-3 py-1.5 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 transition-colors"
                             >
-                              Mod
+                              Modifica
                             </button>
                             <button
                               onClick={() => handleDelete(servizio.id, servizio.nome)}
-                              className="px-2 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded font-medium"
+                              className="px-3 py-1.5 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700 transition-colors"
                             >
-                              Elim
+                              Elimina
                             </button>
                           </div>
                         </div>

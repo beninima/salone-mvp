@@ -144,22 +144,22 @@ export default function ClientiList({ clienti, onClienteUpdated }: { clienti: Cl
                 <div className="flex gap-2">
                   <button
                     onClick={() => router.push(`/clienti/${cliente.id}`)}
-                    className="px-3 py-1 text-xs bg-green-500 hover:bg-green-600 text-white rounded font-medium transition-colors"
+                    className="px-3 py-1.5 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700 transition-colors"
                   >
                     📸 Foto
                   </button>
                   <button
                     onClick={() => setEditingId(cliente.id)}
-                    className="px-3 py-1 text-xs bg-orange-500 hover:bg-orange-600 text-white rounded font-medium transition-colors"
+                    className="px-3 py-1.5 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 transition-colors"
                   >
-                    Mod
+                    Modifica
                   </button>
                   <button
                     onClick={() => handleDelete(cliente.id)}
                     disabled={deletingId === cliente.id}
-                    className="px-3 py-1 text-xs bg-red-500 hover:bg-red-600 text-white rounded font-medium transition-colors disabled:opacity-50"
+                    className="px-3 py-1.5 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
                   >
-                    {deletingId === cliente.id ? '...' : 'Elim'}
+                    {deletingId === cliente.id ? '...' : 'Elimina'}
                   </button>
                 </div>
               </div>
@@ -245,22 +245,22 @@ export default function ClientiList({ clienti, onClienteUpdated }: { clienti: Cl
                 <div className="flex gap-2">
                   <button
                     onClick={() => router.push(`/clienti/${cliente.id}`)}
-                    className="px-2 py-1 bg-green-500 text-white rounded text-xs font-medium hover:bg-green-600"
+                    className="px-3 py-1.5 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700 transition-colors"
                   >
                     📸 Foto
                   </button>
                   <button
                     onClick={() => setEditingId(cliente.id)}
-                    className="px-2 py-1 bg-orange-500 text-white rounded text-xs font-medium hover:bg-orange-600"
+                    className="px-3 py-1.5 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 transition-colors"
                   >
-                    Mod
+                    Modifica
                   </button>
                   <button
                     onClick={() => handleDelete(cliente.id)}
                     disabled={deletingId === cliente.id}
-                    className="px-2 py-1 bg-red-500 text-white rounded text-xs font-medium hover:bg-red-600 disabled:opacity-50"
+                    className="px-3 py-1.5 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
                   >
-                    {deletingId === cliente.id ? '...' : 'Elim'}
+                    {deletingId === cliente.id ? '...' : 'Elimina'}
                   </button>
                 </div>
 
