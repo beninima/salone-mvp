@@ -103,7 +103,7 @@ export default function AppuntamentiAgenda({
 
   return (
     <div className="space-y-3">
-      <h2 className="text-lg font-semibold text-gray-900">
+      <h2 className="text-2xl font-semibold text-gray-900">
         Agenda ({appuntamenti.length})
       </h2>
 
@@ -112,7 +112,7 @@ export default function AppuntamentiAgenda({
         {appuntamenti.map((app, index) => (
           <div
             key={app.id}
-            className={`grid grid-cols-[2fr_1.5fr_1fr_2fr] md:grid-cols-[3fr_2fr_1.5fr_3fr] gap-3 items-center px-4 py-3 hover:bg-gray-50 transition-colors ${
+            className={`grid grid-cols-[2fr_1.5fr_1fr_2fr] md:grid-cols-[3fr_2fr_1.5fr_3fr] gap-4 items-center px-6 py-3 hover:bg-gray-50 transition-colors ${
               index !== appuntamenti.length - 1 ? 'border-b' : ''
             }`}
             style={{ borderLeft: `4px solid ${app.operatore.colore || '#3B82F6'}` }}
@@ -139,7 +139,7 @@ export default function AppuntamentiAgenda({
 
             {/* Operatore + Azioni */}
             <div className="flex items-center justify-between gap-2">
-              <div className="text-sm font-medium truncate" style={{ color: app.operatore.colore || '#3B82F6' }}>
+              <div className="text-base font-medium truncate" style={{ color: app.operatore.colore || '#3B82F6' }}>
                 {app.operatore.cognome} {app.operatore.nome}
               </div>
 
@@ -204,12 +204,12 @@ export default function AppuntamentiAgenda({
         {appuntamenti.map((app) => (
           <div
             key={app.id}
-            className="bg-white rounded-lg shadow p-4"
+            className="bg-white rounded-lg shadow p-6"
             style={{ borderLeft: `4px solid ${app.operatore.colore || '#3B82F6'}` }}
           >
             <div className="flex justify-between items-start mb-3">
               <div className="flex-1">
-                <div className="text-2xl font-bold text-blue-600 mb-1">
+                <div className="text-3xl font-bold text-blue-600 mb-1">
                   {formatTime(app.dataOra)}
                 </div>
                 <h3 className="font-semibold text-lg text-gray-900">

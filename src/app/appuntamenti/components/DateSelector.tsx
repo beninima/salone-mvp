@@ -91,13 +91,13 @@ export default function DateSelector({
       <div className="flex-1 text-center">
         {view === 'week' ? (
           <>
-            <div className="text-lg font-semibold">Settimana</div>
-            <div className="text-sm text-gray-600">{formatWeek()}</div>
+            <div className="text-2xl font-semibold">Settimana</div>
+            <div className="text-base text-gray-600">{formatWeek()}</div>
           </>
         ) : (
           <>
-            <div className="text-lg font-semibold capitalize">{formatDate(selectedDate)}</div>
-            <div className="text-sm text-gray-600">
+            <div className="text-2xl font-semibold capitalize">{formatDate(selectedDate)}</div>
+            <div className="text-base text-gray-600">
               {new Date(selectedDate).toLocaleDateString('it-IT')}
             </div>
           </>

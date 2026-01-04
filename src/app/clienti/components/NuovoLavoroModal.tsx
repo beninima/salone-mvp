@@ -141,7 +141,7 @@ export default function NuovoLavoroModal({
   return (
     <>
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-start justify-center p-4 overflow-y-auto"
+        className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-start justify-center p-6 overflow-y-auto"
         onClick={onClose}
       >
         <div
@@ -149,9 +149,9 @@ export default function NuovoLavoroModal({
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-green-600 to-green-700 text-white p-4 rounded-t-xl">
+          <div className="bg-gradient-to-r from-green-600 to-green-700 text-white p-6 rounded-t-xl">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold">Nuovo Lavoro</h2>
+              <h2 className="text-3xl font-bold">Nuovo Lavoro</h2>
               <button
                 onClick={onClose}
                 className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2"
@@ -170,7 +170,7 @@ export default function NuovoLavoroModal({
             {/* Operatore e Servizio */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-base font-medium text-gray-700 mb-2">
                   Operatore *
                 </label>
                 <select
@@ -189,7 +189,7 @@ export default function NuovoLavoroModal({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-base font-medium text-gray-700 mb-2">
                   Servizio
                 </label>
                 <select
@@ -210,7 +210,7 @@ export default function NuovoLavoroModal({
 
             {/* Note */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-base font-medium text-gray-700 mb-2">
                 Note
               </label>
               <textarea
@@ -226,20 +226,20 @@ export default function NuovoLavoroModal({
             {/* Foto PRIMA */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-2xl font-semibold text-gray-900">
                   📸 PRIMA ({fotoPrima.length}/5)
                 </h3>
                 <button
                   type="button"
                   onClick={() => setShowCamera('prima')}
                   disabled={uploading || fotoPrima.length >= 5}
-                  className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-base font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   + Aggiungi
                 </button>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-4">
                 {fotoPrima.map((foto, index) => (
                   <div key={index} className="relative aspect-square group">
                     <Image
@@ -267,20 +267,20 @@ export default function NuovoLavoroModal({
             {/* Foto DOPO */}
             <div>
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-2xl font-semibold text-gray-900">
                   📸 DOPO ({fotoDopo.length}/5)
                 </h3>
                 <button
                   type="button"
                   onClick={() => setShowCamera('dopo')}
                   disabled={uploading || fotoDopo.length >= 5}
-                  className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-base font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   + Aggiungi
                 </button>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-4">
                 {fotoDopo.map((foto, index) => (
                   <div key={index} className="relative aspect-square group">
                     <Image
@@ -306,7 +306,7 @@ export default function NuovoLavoroModal({
             </div>
 
             {/* Submit */}
-            <div className="flex gap-3 pt-4 border-t">
+            <div className="flex gap-4 pt-4 border-t">
               <button
                 type="button"
                 onClick={onClose}

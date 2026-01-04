@@ -49,14 +49,14 @@ export default function FotoGrid({ foto, tipo, onRemove, readOnly = false }: Fot
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
         </div>
-        <p className="text-sm text-gray-500">Nessuna foto {tipo}</p>
+        <p className="text-base text-gray-500">Nessuna foto {tipo}</p>
       </div>
     )
   }
 
   return (
     <>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {sortedFoto.map((f, index) => (
           <div key={f.id} className="relative group aspect-square">
             <Image
@@ -106,7 +106,7 @@ export default function FotoGrid({ foto, tipo, onRemove, readOnly = false }: Fot
       {/* Lightbox */}
       {lightboxIndex !== null && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center p-6"
           onClick={closeLightbox}
         >
           <button
@@ -161,7 +161,7 @@ export default function FotoGrid({ foto, tipo, onRemove, readOnly = false }: Fot
           </div>
 
           {/* Counter */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white bg-black bg-opacity-50 px-4 py-2 rounded-full">
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white bg-black bg-opacity-50 px-6 py-3 rounded-full">
             {lightboxIndex + 1} / {sortedFoto.length}
           </div>
         </div>

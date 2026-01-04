@@ -37,7 +37,7 @@ export default function ProdottiList({ prodotti }: { prodotti: Prodotto[] }) {
 
   return (
     <div className="space-y-3">
-      <h2 className="text-lg font-semibold text-gray-900">
+      <h2 className="text-2xl font-semibold text-gray-900">
         Catalogo Prodotti ({prodotti.length})
       </h2>
 
@@ -49,7 +49,7 @@ export default function ProdottiList({ prodotti }: { prodotti: Prodotto[] }) {
               onCancel={() => setEditingId(null)}
             />
           ) : (
-            <div className="bg-white rounded-lg shadow p-4">
+            <div className="bg-white rounded-lg shadow p-6">
               <div className="flex justify-between items-start mb-2">
                 <div className="flex-1">
                   <h3 className="font-semibold text-lg text-gray-900">
@@ -67,14 +67,14 @@ export default function ProdottiList({ prodotti }: { prodotti: Prodotto[] }) {
               <div className="flex gap-2 mt-3">
                 <button
                   onClick={() => setEditingId(prodotto.id)}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+                  className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
                 >
                   Modifica
                 </button>
                 <button
                   onClick={() => handleDelete(prodotto.id)}
                   disabled={deletingId === prodotto.id}
-                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50"
+                  className="flex-1 px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:opacity-50"
                 >
                   {deletingId === prodotto.id ? 'Eliminazione...' : 'Elimina'}
                 </button>

@@ -37,7 +37,7 @@ export default function ClientiPage() {
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
         <div className="px-4 py-4">
-          <h1 className="text-2xl font-bold text-gray-900">Clienti</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Clienti</h1>
         </div>
       </div>
 
@@ -47,7 +47,7 @@ export default function ClientiPage() {
         <ClienteForm />
 
         {/* Barra di ricerca */}
-        <Suspense fallback={<div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">Caricamento...</div>}>
+        <Suspense fallback={<div className="w-full px-6 py-3 border border-gray-300 rounded-lg bg-gray-50">Caricamento...</div>}>
           <ClientiSearch />
         </Suspense>
 

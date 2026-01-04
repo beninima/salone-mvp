@@ -58,7 +58,7 @@ export default function ClienteStoriaAppuntamenti({
     <div className="mt-2 border-t border-gray-200 pt-2">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between text-sm text-gray-600 hover:text-gray-900"
+        className="w-full flex items-center justify-between text-base text-gray-600 hover:text-gray-900"
       >
         <span className="font-medium">
           Storia Appuntamenti ({appuntamentiCompletati.length})

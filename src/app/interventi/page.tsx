@@ -18,7 +18,7 @@ export default async function InterventiPage() {
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
         <div className="px-4 py-4">
-          <h1 className="text-2xl font-bold text-gray-900">Interventi</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Interventi</h1>
         </div>
       </div>
 

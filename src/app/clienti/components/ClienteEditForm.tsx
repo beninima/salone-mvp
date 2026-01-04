@@ -37,12 +37,12 @@ export default function ClienteEditForm({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-4">
-      <h2 className="text-lg font-semibold mb-4">Modifica Cliente</h2>
+    <div className="bg-white rounded-lg shadow p-6">
+      <h2 className="text-2xl font-semibold mb-4">Modifica Cliente</h2>
 
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-base font-medium text-gray-700 mb-1">
             Nome *
           </label>
           <input
@@ -55,7 +55,7 @@ export default function ClienteEditForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-base font-medium text-gray-700 mb-1">
             Cognome *
           </label>
           <input
@@ -68,7 +68,7 @@ export default function ClienteEditForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-base font-medium text-gray-700 mb-1">
             Cellulare
           </label>
           <input
@@ -80,7 +80,7 @@ export default function ClienteEditForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-base font-medium text-gray-700 mb-1">
             Note
           </label>
           <textarea
@@ -95,14 +95,14 @@ export default function ClienteEditForm({
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300"
+            className="flex-1 px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300"
           >
             Annulla
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
+            className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
           >
             {loading ? 'Salvataggio...' : 'Salva'}
           </button>

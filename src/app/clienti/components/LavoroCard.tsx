@@ -64,7 +64,7 @@ export default function LavoroCard({ lavoro, onDelete }: LavoroCardProps) {
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       {/* Header */}
       <div
-        className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 cursor-pointer"
+        className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 cursor-pointer"
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex justify-between items-start">
@@ -83,9 +83,9 @@ export default function LavoroCard({ lavoro, onDelete }: LavoroCardProps) {
               👤 {lavoro.operatore.nome} {lavoro.operatore.cognome}
             </p>
             {lavoro.note && (
-              <p className="text-sm text-gray-600 mt-1 italic">"{lavoro.note}"</p>
+              <p className="text-base text-gray-600 mt-1 italic">"{lavoro.note}"</p>
             )}
-            <div className="flex gap-3 mt-2 text-xs text-gray-600">
+            <div className="flex gap-4 mt-2 text-xs text-gray-600">
               <span>📸 PRIMA: {fotoPrima.length}</span>
               <span>📸 DOPO: {fotoDopo.length}</span>
             </div>
@@ -121,11 +121,11 @@ export default function LavoroCard({ lavoro, onDelete }: LavoroCardProps) {
 
       {/* Expanded content */}
       {expanded && (
-        <div className="p-4 space-y-4">
+        <div className="p-6 space-y-4">
           {/* Foto PRIMA */}
           {fotoPrima.length > 0 && (
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-2">📸 PRIMA</h4>
+              <h4 className="text-base font-semibold text-gray-700 mb-2">📸 PRIMA</h4>
               <FotoGrid foto={fotoPrima} tipo="prima" readOnly />
             </div>
           )}
@@ -133,13 +133,13 @@ export default function LavoroCard({ lavoro, onDelete }: LavoroCardProps) {
           {/* Foto DOPO */}
           {fotoDopo.length > 0 && (
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-2">📸 DOPO</h4>
+              <h4 className="text-base font-semibold text-gray-700 mb-2">📸 DOPO</h4>
               <FotoGrid foto={fotoDopo} tipo="dopo" readOnly />
             </div>
           )}
 
           {fotoPrima.length === 0 && fotoDopo.length === 0 && (
-            <p className="text-sm text-gray-500 text-center py-4">
+            <p className="text-base text-gray-500 text-center py-4">
               Nessuna foto disponibile
             </p>
           )}

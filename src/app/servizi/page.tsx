@@ -55,10 +55,10 @@ export default function ServiziPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 pb-20">
-        <div className="bg-white shadow-sm sticky top-0 z-10 p-4">
-          <h1 className="text-2xl font-bold text-gray-900">Servizi</h1>
+        <div className="bg-white shadow-sm sticky top-0 z-10 p-6">
+          <h1 className="text-3xl font-bold text-gray-900">Servizi</h1>
         </div>
-        <div className="p-4 text-center text-gray-500">Caricamento...</div>
+        <div className="p-6 text-center text-gray-500">Caricamento...</div>
       </div>
     )
   }
@@ -66,23 +66,23 @@ export default function ServiziPage() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-10 p-4 border-b">
-        <h1 className="text-2xl font-bold text-gray-900">Servizi</h1>
-        <p className="text-sm text-gray-600">
+      <div className="bg-white shadow-sm sticky top-0 z-10 p-6 border-b">
+        <h1 className="text-3xl font-bold text-gray-900">Servizi</h1>
+        <p className="text-base text-gray-600">
           {serviziAttivi.length} servizi attivi
         </p>
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-4">
+      <div className="p-6 space-y-4">
         {/* Form */}
         <ServizioForm />
 
         {/* Servizi List - Compact Layout */}
         {serviziAttivi.length > 0 && (
           <div className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="px-4 py-3 border-b bg-gray-50">
-              <h2 className="text-lg font-semibold text-gray-900">
+            <div className="px-6 py-3 border-b bg-gray-50">
+              <h2 className="text-2xl font-semibold text-gray-900">
                 Servizi Attivi ({serviziAttivi.length})
               </h2>
             </div>
@@ -92,7 +92,7 @@ export default function ServiziPage() {
               {serviziAttivi.map((servizio, index) => (
                 <div
                   key={servizio.id}
-                  className={`flex items-center gap-4 px-4 py-3 hover:bg-gray-50 transition-colors ${
+                  className={`flex items-center gap-4 px-6 py-3 hover:bg-gray-50 transition-colors ${
                     index !== serviziAttivi.length - 1 ? 'border-b' : ''
                   }`}
                 >
@@ -135,7 +135,7 @@ export default function ServiziPage() {
               {serviziAttivi.map((servizio, index) => (
                 <div
                   key={servizio.id}
-                  className={`px-4 py-3 hover:bg-gray-50 transition-colors ${
+                  className={`px-6 py-3 hover:bg-gray-50 transition-colors ${
                     index !== serviziAttivi.length - 1 ? 'border-b' : ''
                   }`}
                 >
@@ -150,7 +150,7 @@ export default function ServiziPage() {
 
                     {/* Durata + Bottoni */}
                     <div className="flex items-center gap-2">
-                      <div className="text-sm text-gray-600 whitespace-nowrap">
+                      <div className="text-base text-gray-600 whitespace-nowrap">
                         {servizio.durata} min
                       </div>
                       <div className="flex gap-1">

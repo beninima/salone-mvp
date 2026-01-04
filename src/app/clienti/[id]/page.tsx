@@ -119,7 +119,7 @@ export default function ClienteDetailPage({ params }: { params: { id: string } }
             </svg>
             Indietro
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-900">
             {cliente.nome} {cliente.cognome}
           </h1>
           {cliente.cellulare && (
@@ -131,7 +131,7 @@ export default function ClienteDetailPage({ params }: { params: { id: string } }
             </a>
           )}
           {cliente.note && (
-            <p className="text-sm text-gray-600 mt-1">{cliente.note}</p>
+            <p className="text-base text-gray-600 mt-1">{cliente.note}</p>
           )}
         </div>
       </div>
@@ -141,7 +141,7 @@ export default function ClienteDetailPage({ params }: { params: { id: string } }
         {/* Nuova Foto Button */}
         <button
           onClick={() => setShowNuovoLavoro(true)}
-          className="w-full px-4 py-3 bg-green-600 text-white rounded-lg font-semibold text-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+          className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-semibold text-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -152,7 +152,7 @@ export default function ClienteDetailPage({ params }: { params: { id: string } }
 
         {/* Storico Lavori */}
         <div className="space-y-3">
-          <h2 className="text-xl font-bold text-gray-900">
+          <h2 className="text-3xl font-bold text-gray-900">
             Storico Lavori ({fotoLavori.length})
           </h2>
 
@@ -164,7 +164,7 @@ export default function ClienteDetailPage({ params }: { params: { id: string } }
                 </svg>
               </div>
               <p className="text-gray-600 font-medium">Nessuna foto registrata</p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-base text-gray-500 mt-1">
                 Clicca su "Nuova Foto" per iniziare
               </p>
             </div>

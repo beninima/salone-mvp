@@ -11,7 +11,7 @@ export default async function ProdottiPage() {
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
         <div className="px-4 py-4">
-          <h1 className="text-2xl font-bold text-gray-900">Prodotti</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Prodotti</h1>
         </div>
       </div>
 

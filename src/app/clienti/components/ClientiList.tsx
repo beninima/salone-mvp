@@ -88,7 +88,7 @@ export default function ClientiList({ clienti }: { clienti: Cliente[] }) {
 
   return (
     <div className="space-y-3">
-      <h2 className="text-lg font-semibold text-gray-900">
+      <h2 className="text-2xl font-semibold text-gray-900">
         {searchQuery ? `Risultati (${clientiFiltrati.length})` : `Lista Clienti (${clientiFiltrati.length})`}
       </h2>
 
@@ -97,7 +97,7 @@ export default function ClientiList({ clienti }: { clienti: Cliente[] }) {
         {clientiFiltrati.map((cliente, index) => (
           <div key={cliente.id}>
             {editingId === cliente.id ? (
-              <div className="p-4 border-b">
+              <div className="p-6 border-b">
                 <ClienteEditForm
                   cliente={cliente}
                   onCancel={() => setEditingId(null)}
@@ -105,7 +105,7 @@ export default function ClientiList({ clienti }: { clienti: Cliente[] }) {
               </div>
             ) : (
               <div
-                className={`flex items-center gap-4 px-4 py-3 hover:bg-gray-50 transition-colors ${
+                className={`flex items-center gap-4 px-6 py-3 hover:bg-gray-50 transition-colors ${
                   index !== clientiFiltrati.length - 1 ? 'border-b' : ''
                 }`}
               >
@@ -133,7 +133,7 @@ export default function ClientiList({ clienti }: { clienti: Cliente[] }) {
                 <div className="flex-1">
                   <button
                     onClick={() => setExpandedId(expandedId === cliente.id ? null : cliente.id)}
-                    className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1"
+                    className="text-base text-gray-600 hover:text-gray-900 flex items-center gap-1"
                   >
                     📋 Storia ({getAppuntamentiCount(cliente)})
                   </button>
@@ -166,7 +166,7 @@ export default function ClientiList({ clienti }: { clienti: Cliente[] }) {
 
             {/* Expanded Storia - below row */}
             {expandedId === cliente.id && editingId !== cliente.id && (
-              <div className="px-4 py-3 bg-gray-50 border-b">
+              <div className="px-6 py-3 bg-gray-50 border-b">
                 <div className="text-sm">
                   {cliente.appuntamenti && cliente.appuntamenti.length > 0 ? (
                     <div className="space-y-2">
@@ -210,14 +210,14 @@ export default function ClientiList({ clienti }: { clienti: Cliente[] }) {
         {clientiFiltrati.map((cliente) => (
           <div key={cliente.id}>
             {editingId === cliente.id ? (
-              <div className="bg-white rounded-lg shadow p-4">
+              <div className="bg-white rounded-lg shadow p-6">
                 <ClienteEditForm
                   cliente={cliente}
                   onCancel={() => setEditingId(null)}
                 />
               </div>
             ) : (
-              <div className="bg-white rounded-lg shadow p-4">
+              <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg text-gray-900">
@@ -233,7 +233,7 @@ export default function ClientiList({ clienti }: { clienti: Cliente[] }) {
                     )}
                     <button
                       onClick={() => setExpandedId(expandedId === cliente.id ? null : cliente.id)}
-                      className="text-sm text-gray-600 mt-1"
+                      className="text-base text-gray-600 mt-1"
                     >
                       📋 Storia ({getAppuntamentiCount(cliente)})
                     </button>

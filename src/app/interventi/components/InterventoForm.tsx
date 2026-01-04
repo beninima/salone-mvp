@@ -100,7 +100,7 @@ export default function InterventoForm({
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full px-4 py-3 bg-green-600 text-white rounded-lg font-semibold text-lg hover:bg-green-700"
+        className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-semibold text-lg hover:bg-green-700"
       >
         + Nuovo Intervento
       </button>
@@ -108,12 +108,12 @@ export default function InterventoForm({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-4">
-      <h2 className="text-lg font-semibold mb-4">Nuovo Intervento</h2>
+    <div className="bg-white rounded-lg shadow p-6">
+      <h2 className="text-2xl font-semibold mb-4">Nuovo Intervento</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-base font-medium text-gray-700 mb-1">
             Cliente *
           </label>
           <select
@@ -131,7 +131,7 @@ export default function InterventoForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-base font-medium text-gray-700 mb-1">
             Data
           </label>
           <input
@@ -143,7 +143,7 @@ export default function InterventoForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-base font-medium text-gray-700 mb-1">
             Descrizione *
           </label>
           <textarea
@@ -157,7 +157,7 @@ export default function InterventoForm({
 
         {/* Sezione Prodotti */}
         <div className="border-t pt-4">
-          <h3 className="text-sm font-semibold text-gray-900 mb-3">Prodotti Utilizzati</h3>
+          <h3 className="text-base font-semibold text-gray-900 mb-3">Prodotti Utilizzati</h3>
 
           <form onSubmit={aggiungiProdotto} className="space-y-2 mb-3">
             <div className="flex gap-2">
@@ -182,7 +182,7 @@ export default function InterventoForm({
               />
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg text-base font-medium hover:bg-blue-700"
               >
                 +
               </button>
@@ -194,7 +194,7 @@ export default function InterventoForm({
               {prodottiSelezionati.map((p) => (
                 <div key={p.prodottoId} className="flex justify-between items-center bg-gray-50 p-2 rounded">
                   <div className="flex-1">
-                    <div className="text-sm font-medium">{p.nome}</div>
+                    <div className="text-base font-medium">{p.nome}</div>
                     <div className="text-xs text-gray-600">
                       {p.quantita} x €{p.prezzo.toFixed(2)} = €{(p.quantita * p.prezzo).toFixed(2)}
                     </div>
@@ -202,7 +202,7 @@ export default function InterventoForm({
                   <button
                     type="button"
                     onClick={() => rimuoviProdotto(p.prodottoId)}
-                    className="text-red-600 hover:text-red-800 text-sm font-medium ml-2"
+                    className="text-red-600 hover:text-red-800 text-base font-medium ml-2"
                   >
                     Rimuovi
                   </button>
@@ -222,14 +222,14 @@ export default function InterventoForm({
               setIsOpen(false)
               setProdottiSelezionati([])
             }}
-            className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300"
+            className="flex-1 px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300"
           >
             Annulla
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
+            className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
           >
             {loading ? 'Creazione...' : 'Salva'}
           </button>

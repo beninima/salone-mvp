@@ -57,7 +57,7 @@ export default function OperatoreForm() {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full px-4 py-3 bg-green-600 text-white rounded-lg font-semibold text-lg hover:bg-green-700"
+        className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-semibold text-lg hover:bg-green-700"
       >
         + Aggiungi Operatore
       </button>
@@ -65,7 +65,7 @@ export default function OperatoreForm() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-4">
+    <div className="bg-white rounded-lg shadow p-6">
       <form onSubmit={handleSubmit} className="space-y-3">
         {/* Header con titolo */}
         <div className="flex items-center justify-between mb-2">
@@ -73,7 +73,7 @@ export default function OperatoreForm() {
         </div>
 
         {/* Form compatto in griglia */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Nome */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">

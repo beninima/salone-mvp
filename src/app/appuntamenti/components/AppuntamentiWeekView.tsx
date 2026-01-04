@@ -201,7 +201,7 @@ export default function AppuntamentiWeekView({
 
   return (
     <div className="space-y-3">
-      <h2 className="text-lg font-semibold text-gray-900">
+      <h2 className="text-2xl font-semibold text-gray-900">
         Vista Settimanale ({appuntamenti.length} {appuntamenti.length === 1 ? 'appuntamento' : 'appuntamenti'})
       </h2>
 
@@ -284,24 +284,24 @@ export default function AppuntamentiWeekView({
       {/* Modal dettaglio appuntamento */}
       {selectedApp && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-6"
           onClick={() => setSelectedApp(null)}
         >
           <div
-            className="bg-white rounded-lg shadow-xl p-4 max-w-md w-full"
+            className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-bold mb-3">Dettaglio Appuntamento</h3>
 
             <div className="space-y-2 mb-4">
               <div>
-                <span className="text-sm text-gray-600">Cliente:</span>
+                <span className="text-base text-gray-600">Cliente:</span>
                 <div className="font-semibold">
                   {selectedApp.cliente.cognome} {selectedApp.cliente.nome}
                 </div>
               </div>
               <div>
-                <span className="text-sm text-gray-600">Operatore:</span>
+                <span className="text-base text-gray-600">Operatore:</span>
                 <div className="font-semibold flex items-center gap-2">
                   <div
                     className="w-3 h-3 rounded-full"
@@ -311,7 +311,7 @@ export default function AppuntamentiWeekView({
                 </div>
               </div>
               <div>
-                <span className="text-sm text-gray-600">Data e Ora:</span>
+                <span className="text-base text-gray-600">Data e Ora:</span>
                 <div className="font-semibold">
                   {new Date(selectedApp.dataOra).toLocaleDateString('it-IT', {
                     weekday: 'long',
@@ -321,15 +321,15 @@ export default function AppuntamentiWeekView({
                 </div>
               </div>
               <div>
-                <span className="text-sm text-gray-600">Servizio:</span>
+                <span className="text-base text-gray-600">Servizio:</span>
                 <div className="font-semibold">{selectedApp.servizio}</div>
               </div>
               <div>
-                <span className="text-sm text-gray-600">Durata:</span>
+                <span className="text-base text-gray-600">Durata:</span>
                 <div className="font-semibold">{selectedApp.durata} minuti</div>
               </div>
               <div>
-                <span className="text-sm text-gray-600">Stato:</span>
+                <span className="text-base text-gray-600">Stato:</span>
                 <div className="font-semibold capitalize">{selectedApp.stato}</div>
               </div>
             </div>
@@ -384,7 +384,7 @@ export default function AppuntamentiWeekView({
 
               <button
                 onClick={() => setSelectedApp(null)}
-                className="w-full px-3 py-2 bg-gray-200 text-gray-800 rounded-lg text-sm font-medium hover:bg-gray-300"
+                className="w-full px-3 py-2 bg-gray-200 text-gray-800 rounded-lg text-base font-medium hover:bg-gray-300"
               >
                 Chiudi
               </button>

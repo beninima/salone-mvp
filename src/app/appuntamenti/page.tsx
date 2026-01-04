@@ -36,7 +36,7 @@ export default async function AppuntamentiPage({
       <div className="bg-white shadow-sm sticky top-0 z-10">
         <div className="px-4 py-4">
           <div className="flex justify-between items-center mb-3">
-            <h1 className="text-2xl font-bold text-gray-900">Appuntamenti</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Appuntamenti</h1>
             <ViewToggle currentView={view} />
           </div>
           <DateSelector selectedDate={selectedDate} view={view} weekData={weekData} />

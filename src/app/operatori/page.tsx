@@ -63,8 +63,8 @@ export default function OperatoriPage() {
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
         <div className="px-4 py-4">
-          <h1 className="text-2xl font-bold text-gray-900">Operatori</h1>
-          <p className="text-sm text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-gray-900">Operatori</h1>
+          <p className="text-base text-gray-600 mt-1">
             {operatoriAttivi.length} {operatoriAttivi.length === 1 ? 'operatore attivo' : 'operatori attivi'}
           </p>
         </div>
@@ -84,15 +84,15 @@ export default function OperatoriPage() {
           <>
             {operatoriAttivi.length > 0 && (
               <div className="space-y-2">
-                <h2 className="text-lg font-semibold text-gray-900 px-2">Operatori Attivi</h2>
+                <h2 className="text-2xl font-semibold text-gray-900 px-2">Operatori Attivi</h2>
                 {operatoriAttivi.map((operatore) => (
                   <div
                     key={operatore.id}
-                    className="bg-white rounded-lg shadow p-4"
+                    className="bg-white rounded-lg shadow p-6"
                     style={{ borderLeft: `4px solid ${operatore.colore || '#3B82F6'}` }}
                   >
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 flex-1">
+                      <div className="flex items-center gap-4 flex-1">
                         <div
                           className="w-10 h-10 rounded-full flex-shrink-0"
                           style={{ backgroundColor: operatore.colore || '#3B82F6' }}
@@ -101,7 +101,7 @@ export default function OperatoriPage() {
                           <h3 className="font-semibold text-lg text-gray-900">
                             {operatore.cognome} {operatore.nome}
                           </h3>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-base text-gray-600">
                             {operatore.colore || 'Nessun colore impostato'}
                           </p>
                         </div>
@@ -135,15 +135,15 @@ export default function OperatoriPage() {
 
             {operatoriDisattivati.length > 0 && (
               <div className="space-y-2 pt-4">
-                <h2 className="text-lg font-semibold text-gray-500 px-2">Operatori Disattivati</h2>
+                <h2 className="text-2xl font-semibold text-gray-500 px-2">Operatori Disattivati</h2>
                 {operatoriDisattivati.map((operatore) => (
                   <div
                     key={operatore.id}
-                    className="bg-gray-100 rounded-lg shadow p-4 opacity-60"
+                    className="bg-gray-100 rounded-lg shadow p-6 opacity-60"
                     style={{ borderLeft: `4px solid ${operatore.colore || '#9CA3AF'}` }}
                   >
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 flex-1">
+                      <div className="flex items-center gap-4 flex-1">
                         <div
                           className="w-10 h-10 rounded-full flex-shrink-0"
                           style={{ backgroundColor: operatore.colore || '#9CA3AF' }}
@@ -152,7 +152,7 @@ export default function OperatoriPage() {
                           <h3 className="font-semibold text-lg text-gray-700">
                             {operatore.cognome} {operatore.nome}
                           </h3>
-                          <p className="text-sm text-gray-500">Disattivato</p>
+                          <p className="text-base text-gray-500">Disattivato</p>
                         </div>
                       </div>
 
