@@ -17,24 +17,22 @@ type Operatore = {
   colore: string | null
 }
 
-const SERVIZI = [
-  'Taglio',
-  'Piega',
-  'Colore',
-  'Mèches',
-  'Trattamento',
-  'Taglio + Piega',
-  'Taglio + Colore',
-  'Altro'
-]
+type Servizio = {
+  id: string
+  nome: string
+  prezzo: number
+  durata: number
+}
 
 export default function AppuntamentoForm({
   clienti,
   operatori,
+  servizi,
   selectedDate
 }: {
   clienti: Cliente[]
   operatori: Operatore[]
+  servizi: Servizio[]
   selectedDate: string
 }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -146,9 +144,9 @@ export default function AppuntamentoForm({
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">Seleziona servizio</option>
-            {SERVIZI.map((servizio) => (
-              <option key={servizio} value={servizio}>
-                {servizio}
+            {servizi.map((servizio) => (
+              <option key={servizio.id} value={servizio.id}>
+                {servizio.nome} - €{servizio.prezzo.toFixed(2)} ({servizio.durata} min)
               </option>
             ))}
           </select>

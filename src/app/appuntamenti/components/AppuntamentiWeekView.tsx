@@ -14,7 +14,6 @@ type Operatore = {
 type Appuntamento = {
   id: number
   dataOra: Date
-  servizio: string
   durata: number
   stato: string
   cliente: {
@@ -23,6 +22,15 @@ type Appuntamento = {
     cognome: string
   }
   operatore: Operatore
+  servizi: {
+    servizio: {
+      id: string
+      nome: string
+      prezzo: number
+      durata: number
+    }
+    ordine: number
+  }[]
 }
 
 type WeekData = {
@@ -269,7 +277,7 @@ export default function AppuntamentiWeekView({
                       >
                         <div className="font-bold">{formatTime(app.dataOra)}</div>
                         <div className="truncate text-gray-700">{app.cliente.cognome}</div>
-                        <div className="truncate text-gray-500">{app.servizio}</div>
+                        <div className="truncate text-gray-500">{app.servizi.map(s => s.servizio.nome).join(', ')}</div>
                         <div className="text-gray-400">{app.durata}min</div>
                       </button>
                     ))}
@@ -321,8 +329,8 @@ export default function AppuntamentiWeekView({
                 </div>
               </div>
               <div>
-                <span className="text-base text-gray-600">Servizio:</span>
-                <div className="font-semibold">{selectedApp.servizio}</div>
+                <span className="text-base text-gray-600">Servizi:</span>
+                <div className="font-semibold">{selectedApp.servizi.map(s => s.servizio.nome).join(', ')}</div>
               </div>
               <div>
                 <span className="text-base text-gray-600">Durata:</span>

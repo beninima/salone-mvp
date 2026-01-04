@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation'
 type Appuntamento = {
   id: number
   dataOra: Date
-  servizio: string
   durata: number
   stato: string
   cliente: {
@@ -21,6 +20,15 @@ type Appuntamento = {
     cognome: string
     colore: string | null
   }
+  servizi: {
+    servizio: {
+      id: string
+      nome: string
+      prezzo: number
+      durata: number
+    }
+    ordine: number
+  }[]
 }
 
 export default function AppuntamentiAgenda({
@@ -122,9 +130,9 @@ export default function AppuntamentiAgenda({
               {app.cliente.cognome} {app.cliente.nome}
             </div>
 
-            {/* Servizio */}
+            {/* Servizi */}
             <div className="text-sm text-gray-700 truncate">
-              {app.servizio}
+              {app.servizi.map(s => s.servizio.nome).join(', ')}
             </div>
 
             {/* Tempo (Ora + Durata) */}
@@ -216,7 +224,7 @@ export default function AppuntamentiAgenda({
                   {app.cliente.cognome} {app.cliente.nome}
                 </h3>
                 <div className="text-gray-600 text-sm mt-1">
-                  <p>{app.servizio}</p>
+                  <p>{app.servizi.map(s => s.servizio.nome).join(', ')}</p>
                   <p>{app.durata} minuti</p>
                   <p className="text-xs mt-1 font-medium" style={{ color: app.operatore.colore || '#3B82F6' }}>
                     {app.operatore.cognome} {app.operatore.nome}

@@ -20,7 +20,15 @@ export async function getAppuntamentiByDate(date: string) {
       },
       include: {
         cliente: true,
-        operatore: true
+        operatore: true,
+        servizi: {
+          include: {
+            servizio: true
+          },
+          orderBy: {
+            ordine: 'asc'
+          }
+        }
       },
       orderBy: { dataOra: 'asc' }
     })
@@ -101,10 +109,10 @@ export async function createAppuntamento(formData: FormData) {
     const operatoreId = formData.get('operatoreId') as string
     const data = formData.get('data') as string
     const ora = formData.get('ora') as string
-    const servizio = formData.get('servizio') as string
+    const servizioId = formData.get('servizio') as string // Ora è l'ID del servizio
     const durata = parseInt(formData.get('durata') as string)
 
-    if (!clienteId || !operatoreId || !data || !ora || !servizio || !durata) {
+    if (!clienteId || !operatoreId || !data || !ora || !servizioId || !durata) {
       return { success: false, error: 'Tutti i campi sono obbligatori' }
     }
 
@@ -116,14 +124,20 @@ export async function createAppuntamento(formData: FormData) {
       return { success: false, error: overlap.conflictDetails || 'L\'operatore ha già un appuntamento in questo orario' }
     }
 
+    // Crea l'appuntamento con la relazione al servizio
     await prisma.appuntamento.create({
       data: {
         clienteId,
         operatoreId,
         dataOra,
-        servizio,
         durata,
-        stato: 'confermato'
+        stato: 'confermato',
+        servizi: {
+          create: {
+            servizioId,
+            ordine: 1
+          }
+        }
       }
     })
 
@@ -187,7 +201,15 @@ export async function getAppuntamentiByWeek(date: string) {
       },
       include: {
         cliente: true,
-        operatore: true
+        operatore: true,
+        servizi: {
+          include: {
+            servizio: true
+          },
+          orderBy: {
+            ordine: 'asc'
+          }
+        }
       },
       orderBy: { dataOra: 'asc' }
     })
@@ -212,7 +234,15 @@ export async function getAppuntamentiByOperatoreAndDateRange(startDate: Date, en
       },
       include: {
         cliente: true,
-        operatore: true
+        operatore: true,
+        servizi: {
+          include: {
+            servizio: true
+          },
+          orderBy: {
+            ordine: 'asc'
+          }
+        }
       },
       orderBy: [
         { operatoreId: 'asc' },
