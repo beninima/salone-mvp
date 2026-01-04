@@ -285,3 +285,122 @@ export async function getClientiForSelect() {
     return { success: false, error: 'Errore nel recupero dei clienti' }
   }
 }
+
+/**
+ * Add a service to an existing appointment
+ */
+export async function addServizioToAppuntamento(appuntamentoId: number, servizioId: string) {
+  try {
+    // Get the appointment to check if service already exists
+    const appuntamento = await prisma.appuntamento.findUnique({
+      where: { id: appuntamentoId },
+      include: {
+        servizi: {
+          include: {
+            servizio: true
+          }
+        }
+      }
+    })
+
+    if (!appuntamento) {
+      return { success: false, error: 'Appuntamento non trovato' }
+    }
+
+    // Check if service is already added
+    const serviceExists = appuntamento.servizi.some(s => s.servizioId === servizioId)
+    if (serviceExists) {
+      return { success: false, error: 'Servizio già aggiunto a questo appuntamento' }
+    }
+
+    // Get the service to add its duration
+    const servizio = await prisma.servizio.findUnique({
+      where: { id: servizioId }
+    })
+
+    if (!servizio) {
+      return { success: false, error: 'Servizio non trovato' }
+    }
+
+    // Calculate new order (max + 1)
+    const maxOrdine = appuntamento.servizi.length > 0
+      ? Math.max(...appuntamento.servizi.map(s => s.ordine))
+      : 0
+
+    // Add service and update total duration
+    await prisma.appuntamento.update({
+      where: { id: appuntamentoId },
+      data: {
+        servizi: {
+          create: {
+            servizioId,
+            ordine: maxOrdine + 1
+          }
+        },
+        durata: appuntamento.durata + servizio.durata
+      }
+    })
+
+    revalidatePath('/appuntamenti')
+    return { success: true }
+  } catch (error) {
+    console.error('Errore addServizioToAppuntamento:', error)
+    return { success: false, error: 'Errore nell\'aggiunta del servizio' }
+  }
+}
+
+/**
+ * Remove a service from an existing appointment
+ */
+export async function removeServizioFromAppuntamento(appuntamentoId: number, servizioId: string) {
+  try {
+    // Get the appointment with services
+    const appuntamento = await prisma.appuntamento.findUnique({
+      where: { id: appuntamentoId },
+      include: {
+        servizi: {
+          include: {
+            servizio: true
+          }
+        }
+      }
+    })
+
+    if (!appuntamento) {
+      return { success: false, error: 'Appuntamento non trovato' }
+    }
+
+    // Check if it's the last service
+    if (appuntamento.servizi.length <= 1) {
+      return { success: false, error: 'Non puoi rimuovere l\'ultimo servizio. L\'appuntamento deve avere almeno un servizio.' }
+    }
+
+    // Find the service to remove
+    const servizioToRemove = appuntamento.servizi.find(s => s.servizioId === servizioId)
+    if (!servizioToRemove) {
+      return { success: false, error: 'Servizio non trovato nell\'appuntamento' }
+    }
+
+    // Remove service and update total duration
+    await prisma.appuntamento.update({
+      where: { id: appuntamentoId },
+      data: {
+        servizi: {
+          delete: {
+            appuntamentoId_servizioId: {
+              appuntamentoId,
+              servizioId
+            }
+          }
+        },
+        durata: appuntamento.durata - servizioToRemove.servizio.durata
+      }
+    })
+
+    revalidatePath('/appuntamenti')
+    return { success: true }
+  } catch (error) {
+    console.error('Errore removeServizioFromAppuntamento:', error)
+    return { success: false, error: 'Errore nella rimozione del servizio' }
+  }
+}

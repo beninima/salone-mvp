@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { deleteAppuntamento, updateAppuntamentoStato } from '@/app/actions/appuntamenti'
 import { useRouter } from 'next/navigation'
+import ManageServicesModal from './ManageServicesModal'
 
 type Appuntamento = {
   id: number
@@ -37,6 +38,7 @@ export default function AppuntamentiAgenda({
   appuntamenti: Appuntamento[]
 }) {
   const [actioningId, setActioningId] = useState<number | null>(null)
+  const [managingServicesApp, setManagingServicesApp] = useState<Appuntamento | null>(null)
   const router = useRouter()
 
   const handleCompleta = async (id: number) => {
@@ -154,6 +156,14 @@ export default function AppuntamentiAgenda({
               {/* Azioni */}
               <div className="flex gap-1 flex-shrink-0">
                 <button
+                  onClick={() => setManagingServicesApp(app)}
+                  className="px-2 py-1 text-xs bg-purple-500 hover:bg-purple-600 text-white rounded font-medium transition-colors"
+                  title="Gestisci Servizi"
+                >
+                  ⚙️
+                </button>
+
+                <button
                   onClick={() => router.push(`/clienti/${app.cliente.id}`)}
                   className="px-2 py-1 text-xs bg-green-500 hover:bg-green-600 text-white rounded font-medium transition-colors"
                   title="Foto"
@@ -236,6 +246,13 @@ export default function AppuntamentiAgenda({
             {/* Azioni mobile */}
             <div className="flex gap-2 flex-wrap">
               <button
+                onClick={() => setManagingServicesApp(app)}
+                className="px-2 py-1 bg-purple-500 text-white rounded text-xs font-medium hover:bg-purple-600"
+              >
+                ⚙️ Servizi
+              </button>
+
+              <button
                 onClick={() => router.push(`/clienti/${app.cliente.id}`)}
                 className="px-2 py-1 bg-green-500 text-white rounded text-xs font-medium hover:bg-green-600"
               >
@@ -282,6 +299,19 @@ export default function AppuntamentiAgenda({
           </div>
         ))}
       </div>
+
+      {/* Manage Services Modal */}
+      {managingServicesApp && (
+        <ManageServicesModal
+          appuntamentoId={managingServicesApp.id}
+          currentServices={managingServicesApp.servizi}
+          onClose={() => setManagingServicesApp(null)}
+          onSuccess={() => {
+            setManagingServicesApp(null)
+            router.refresh()
+          }}
+        />
+      )}
     </div>
   )
 }
