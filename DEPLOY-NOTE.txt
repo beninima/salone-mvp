@@ -1,0 +1,8 @@
+
+# IMPORTANTE - DEPLOY VERCEL
+Backup SQLite locale salvato in .env.backup
+Per ripristinare sviluppo locale:
+  cp .env.backup .env
+  
+Su Vercel, il DATABASE_URL verrà automaticamente impostato dal database Postgres.
+
