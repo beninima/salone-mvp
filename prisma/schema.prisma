@@ -46,18 +46,31 @@ model Appuntamento {
   clienteId   Int
   operatoreId String
   dataOra     DateTime
-  servizio    String
-  durata      Int      // durata in minuti
+  durata      Int      // durata totale in minuti (calcolata dalla somma dei servizi)
   stato       String   @default("confermato") // confermato, completato, cancellato
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relazioni
-  cliente   Cliente   @relation(fields: [clienteId], references: [id], onDelete: Cascade)
-  operatore Operatore @relation(fields: [operatoreId], references: [id], onDelete: Cascade)
+  cliente   Cliente                @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  operatore Operatore              @relation(fields: [operatoreId], references: [id], onDelete: Cascade)
+  servizi   AppuntamentoServizio[]
 
   // Constraint: un operatore non può avere appuntamenti sovrapposti nello stesso momento
   @@unique([operatoreId, dataOra])
+}
+
+model AppuntamentoServizio {
+  appuntamentoId Int
+  servizioId     String
+  ordine         Int       @default(1) // ordine di esecuzione dei servizi
+  createdAt      DateTime  @default(now())
+
+  // Relazioni
+  appuntamento Appuntamento @relation(fields: [appuntamentoId], references: [id], onDelete: Cascade)
+  servizio     Servizio     @relation(fields: [servizioId], references: [id], onDelete: Cascade)
+
+  @@id([appuntamentoId, servizioId])
 }
 
 model Intervento {
@@ -99,16 +112,17 @@ model InterventoProdotto {
 }
 
 model Servizio {
-  id         String       @id @default(cuid())
-  nome       String
-  prezzo     Float
-  durata     Int          @default(60) // durata predefinita in minuti
-  attivo     Boolean      @default(true)
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  id           String                 @id @default(cuid())
+  nome         String
+  prezzo       Float
+  durata       Int                    @default(60) // durata predefinita in minuti
+  attivo       Boolean                @default(true)
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
 
   // Relazioni
-  fotoLavori FotoLavoro[]
+  fotoLavori   FotoLavoro[]
+  appuntamenti AppuntamentoServizio[]
 
   @@map("servizi")
 }
