@@ -19,7 +19,7 @@ type Cliente = {
   interventi?: any[]
 }
 
-export default function ClientiPage() {
+function ClientiPageContent() {
   const [clienti, setClienti] = useState<Cliente[]>([])
   const [loading, setLoading] = useState(true)
   const searchParams = useSearchParams()
@@ -68,5 +68,26 @@ export default function ClientiPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function ClientiPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 pb-20">
+        <div className="bg-white shadow-sm sticky top-0 z-10">
+          <div className="px-4 py-4">
+            <h1 className="text-3xl font-bold text-gray-900">Clienti</h1>
+          </div>
+        </div>
+        <div className="px-4 py-4">
+          <div className="bg-white rounded-lg shadow p-8 text-center">
+            <p className="text-gray-500">Caricamento...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <ClientiPageContent />
+    </Suspense>
   )
 }

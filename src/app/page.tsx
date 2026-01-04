@@ -29,7 +29,12 @@ async function getDashboardData() {
         stato: 'confermato'
       },
       include: {
-        cliente: true
+        cliente: true,
+        servizi: {
+          include: {
+            servizio: true
+          }
+        }
       },
       orderBy: {
         dataOra: 'asc'
@@ -113,7 +118,9 @@ export default async function HomePage() {
                       <h3 className="font-semibold text-gray-900">
                         {app.cliente.cognome} {app.cliente.nome}
                       </h3>
-                      <p className="text-base text-gray-600">{app.servizio}</p>
+                      <p className="text-base text-gray-600">
+                        {app.servizi.map(s => s.servizio.nome).join(', ')}
+                      </p>
                       <p className="text-xs text-gray-500">{app.durata} min</p>
                     </div>
                   </div>

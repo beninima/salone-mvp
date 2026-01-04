@@ -69,7 +69,7 @@ export async function createCliente(formData: FormData) {
       return { success: false, error: 'Nome e cognome sono obbligatori' }
     }
 
-    await prisma.cliente.create({
+    const cliente = await prisma.cliente.create({
       data: {
         nome,
         cognome,
@@ -79,7 +79,7 @@ export async function createCliente(formData: FormData) {
     })
 
     revalidatePath('/clienti')
-    return { success: true }
+    return { success: true, data: cliente }
   } catch (error) {
     return { success: false, error: 'Errore nella creazione del cliente' }
   }

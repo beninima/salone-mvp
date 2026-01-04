@@ -20,7 +20,10 @@ export default function DateSelector({
   const searchParams = useSearchParams()
 
   const getDateUrl = (amount: number) => {
-    const date = new Date(selectedDate)
+    // Parse date in local timezone to avoid UTC issues
+    const [year, month, day] = selectedDate.split('-').map(Number)
+    const date = new Date(year, month - 1, day)
+
     if (view === 'week') {
       // Cambia settimana (7 giorni)
       date.setDate(date.getDate() + (amount * 7))
@@ -28,7 +31,13 @@ export default function DateSelector({
       // Cambia giorno
       date.setDate(date.getDate() + amount)
     }
-    const newDate = date.toISOString().split('T')[0]
+
+    // Format date as YYYY-MM-DD in local timezone
+    const newYear = date.getFullYear()
+    const newMonth = String(date.getMonth() + 1).padStart(2, '0')
+    const newDay = String(date.getDate()).padStart(2, '0')
+    const newDate = `${newYear}-${newMonth}-${newDay}`
+
     return `/appuntamenti?view=${view}&date=${newDate}`
   }
 
@@ -38,10 +47,14 @@ export default function DateSelector({
   }
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr)
+    // Parse date in local timezone
+    const [year, month, day] = dateStr.split('-').map(Number)
+    const date = new Date(year, month - 1, day)
+
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    const selected = new Date(dateStr)
+
+    const selected = new Date(year, month - 1, day)
     selected.setHours(0, 0, 0, 0)
 
     if (selected.getTime() === today.getTime()) {
@@ -83,6 +96,7 @@ export default function DateSelector({
     <div className="flex items-center gap-2">
       <Link
         href={getDateUrl(-1)}
+        prefetch={false}
         className="px-3 py-2 bg-gray-200 rounded-lg font-medium hover:bg-gray-300"
       >
         ←
@@ -98,7 +112,11 @@ export default function DateSelector({
           <>
             <div className="text-2xl font-semibold capitalize">{formatDate(selectedDate)}</div>
             <div className="text-base text-gray-600">
-              {new Date(selectedDate).toLocaleDateString('it-IT')}
+              {(() => {
+                const [year, month, day] = selectedDate.split('-').map(Number)
+                const date = new Date(year, month - 1, day)
+                return date.toLocaleDateString('it-IT')
+              })()}
             </div>
           </>
         )}
@@ -106,6 +124,7 @@ export default function DateSelector({
 
       <Link
         href={getDateUrl(1)}
+        prefetch={false}
         className="px-3 py-2 bg-gray-200 rounded-lg font-medium hover:bg-gray-300"
       >
         →
@@ -113,6 +132,7 @@ export default function DateSelector({
 
       <Link
         href={getTodayUrl()}
+        prefetch={false}
         className="px-3 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
       >
         Oggi

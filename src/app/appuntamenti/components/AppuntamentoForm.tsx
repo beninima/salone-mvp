@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { createAppuntamento } from '@/app/actions/appuntamenti'
 import { useRouter } from 'next/navigation'
+import NuovoClienteModal from './NuovoClienteModal'
 
 type Cliente = {
   id: number
@@ -38,10 +39,16 @@ export default function AppuntamentoForm({
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [selectedServices, setSelectedServices] = useState<{servizioId: string, durata: number}[]>([{servizioId: '', durata: 0}])
+  const [showNuovoClienteModal, setShowNuovoClienteModal] = useState(false)
+  const [selectedClienteId, setSelectedClienteId] = useState<string>('')
+  const [newlyCreatedCliente, setNewlyCreatedCliente] = useState<Cliente | null>(null)
   const router = useRouter()
 
-  // Sort clienti alphabetically by cognome
-  const sortedClienti = [...clienti].sort((a, b) =>
+  // Sort clienti alphabetically by cognome, including newly created client
+  const allClienti = newlyCreatedCliente
+    ? [...clienti, newlyCreatedCliente]
+    : clienti
+  const sortedClienti = [...allClienti].sort((a, b) =>
     a.cognome.localeCompare(b.cognome)
   )
 
@@ -50,9 +57,20 @@ export default function AppuntamentoForm({
 
   const handleClienteChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (e.target.value === 'new') {
-      // Redirect to clients page with return flag
-      router.push('/clienti?from=appuntamenti')
+      // Open modal to create new client
+      setShowNuovoClienteModal(true)
+      // Reset select to empty
+      e.target.value = ''
+    } else {
+      setSelectedClienteId(e.target.value)
     }
+  }
+
+  const handleClienteCreated = (cliente: Cliente) => {
+    // Add the newly created client to local state and select it
+    setNewlyCreatedCliente(cliente)
+    setSelectedClienteId(cliente.id.toString())
+    setShowNuovoClienteModal(false)
   }
 
   const handleServiceChange = (index: number, servizioId: string) => {
@@ -140,6 +158,7 @@ export default function AppuntamentoForm({
           </label>
           <select
             name="clienteId"
+            value={selectedClienteId}
             required
             onChange={handleClienteChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -283,6 +302,13 @@ export default function AppuntamentoForm({
           </button>
         </div>
       </form>
+
+      {/* Modale per creare nuovo cliente */}
+      <NuovoClienteModal
+        isOpen={showNuovoClienteModal}
+        onClose={() => setShowNuovoClienteModal(false)}
+        onClienteCreated={handleClienteCreated}
+      />
     </div>
   )
 }
