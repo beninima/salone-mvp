@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createAppuntamento } from '@/app/actions/appuntamenti'
+import { updateAppuntamento } from '@/app/actions/appuntamenti'
 import { useRouter } from 'next/navigation'
 
 type Cliente = {
@@ -24,20 +24,54 @@ type Servizio = {
   durata: number
 }
 
-export default function AppuntamentoForm({
+type Appuntamento = {
+  id: number
+  dataOra: Date
+  durata: number
+  stato: string
+  cliente: {
+    id: number
+    nome: string
+    cognome: string
+  }
+  operatore: {
+    id: string
+    nome: string
+    cognome: string
+    colore: string | null
+  }
+  servizi: {
+    servizio: {
+      id: string
+      nome: string
+      prezzo: number
+      durata: number
+    }
+    ordine: number
+  }[]
+}
+
+export default function AppuntamentoEditForm({
+  appuntamento,
   clienti,
   operatori,
   servizi,
-  selectedDate
+  onCancel,
+  onSuccess
 }: {
+  appuntamento: Appuntamento
   clienti: Cliente[]
   operatori: Operatore[]
   servizi: Servizio[]
-  selectedDate: string
+  onCancel: () => void
+  onSuccess?: () => void
 }) {
-  const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [selectedServices, setSelectedServices] = useState<{servizioId: string, durata: number}[]>([{servizioId: '', durata: 0}])
+  const [selectedServices, setSelectedServices] = useState<{servizioId: string, durata: number}[]>(
+    appuntamento.servizi.length > 0
+      ? appuntamento.servizi.map(s => ({servizioId: s.servizio.id, durata: s.servizio.durata}))
+      : [{servizioId: '', durata: 0}]
+  )
   const router = useRouter()
 
   // Sort clienti alphabetically by cognome
@@ -104,34 +138,41 @@ export default function AppuntamentoForm({
     // Add calculated total duration
     formData.set('durata', totalDuration.toString())
 
-    const result = await createAppuntamento(formData)
+    const result = await updateAppuntamento(appuntamento.id, formData)
 
     setLoading(false)
 
     if (result.success) {
-      setIsOpen(false)
-      setSelectedServices([{servizioId: '', durata: 0}])
-      e.currentTarget.reset()
+      if (onSuccess) {
+        onSuccess()
+      }
+      onCancel()
       router.refresh()
     } else {
       alert(result.error)
     }
   }
 
-  if (!isOpen) {
-    return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-semibold text-lg hover:bg-green-700"
-      >
-        + Nuovo Appuntamento
-      </button>
-    )
+  // Format date for input (YYYY-MM-DD)
+  const formatDateForInput = (date: Date) => {
+    const d = new Date(date)
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  // Format time for input (HH:MM)
+  const formatTimeForInput = (date: Date) => {
+    const d = new Date(date)
+    const hours = String(d.getHours()).padStart(2, '0')
+    const minutes = String(d.getMinutes()).padStart(2, '0')
+    return `${hours}:${minutes}`
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-2xl font-semibold mb-4">Nuovo Appuntamento</h2>
+    <div className="bg-gray-50 rounded-lg shadow p-6 border-2 border-blue-200">
+      <h3 className="text-xl font-semibold mb-4 text-blue-700">Modifica Appuntamento</h3>
 
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
@@ -141,6 +182,7 @@ export default function AppuntamentoForm({
           <select
             name="clienteId"
             required
+            defaultValue={appuntamento.cliente.id}
             onChange={handleClienteChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
@@ -161,6 +203,7 @@ export default function AppuntamentoForm({
           <select
             name="operatoreId"
             required
+            defaultValue={appuntamento.operatore.id}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">Seleziona operatore</option>
@@ -179,7 +222,7 @@ export default function AppuntamentoForm({
           <input
             type="date"
             name="data"
-            defaultValue={selectedDate}
+            defaultValue={formatDateForInput(appuntamento.dataOra)}
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
@@ -192,6 +235,7 @@ export default function AppuntamentoForm({
           <input
             type="time"
             name="ora"
+            defaultValue={formatTimeForInput(appuntamento.dataOra)}
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
@@ -269,7 +313,7 @@ export default function AppuntamentoForm({
         <div className="flex gap-2 pt-2">
           <button
             type="button"
-            onClick={() => setIsOpen(false)}
+            onClick={onCancel}
             className="flex-1 px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300"
           >
             Annulla
@@ -279,7 +323,7 @@ export default function AppuntamentoForm({
             disabled={loading}
             className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
           >
-            {loading ? 'Creazione...' : 'Crea'}
+            {loading ? 'Salvataggio...' : 'Salva Modifiche'}
           </button>
         </div>
       </form>

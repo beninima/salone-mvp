@@ -3,6 +3,7 @@
 export const dynamic = 'force-dynamic'
 
 import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { getClienti } from '@/app/actions/clienti'
 import ClientiList from './components/ClientiList'
 import ClienteForm from './components/ClienteForm'
@@ -21,6 +22,8 @@ type Cliente = {
 export default function ClientiPage() {
   const [clienti, setClienti] = useState<Cliente[]>([])
   const [loading, setLoading] = useState(true)
+  const searchParams = useSearchParams()
+  const returnFrom = searchParams.get('from')
 
   const loadClienti = async () => {
     setLoading(true)
@@ -45,7 +48,10 @@ export default function ClientiPage() {
       {/* Content */}
       <div className="px-4 py-4 space-y-4">
         {/* Form per nuovo cliente */}
-        <ClienteForm />
+        <ClienteForm
+          returnTo={returnFrom === 'appuntamenti' ? '/appuntamenti' : undefined}
+          onClienteCreated={loadClienti}
+        />
 
         {/* Barra di ricerca */}
         <Suspense fallback={<div className="w-full px-6 py-3 border border-gray-300 rounded-lg bg-gray-50">Caricamento...</div>}>

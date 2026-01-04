@@ -76,7 +76,7 @@ export default function ServiziPage() {
       {/* Content */}
       <div className="p-6 space-y-4">
         {/* Form */}
-        <ServizioForm />
+        <ServizioForm onServizioCreated={loadServizi} />
 
         {/* Servizi List - Compact Layout */}
         {serviziAttivi.length > 0 && (

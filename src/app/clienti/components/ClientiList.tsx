@@ -67,7 +67,12 @@ export default function ClientiList({ clienti, onClienteUpdated }: { clienti: Cl
     const result = await deleteCliente(id)
     setDeletingId(null)
 
-    if (!result.success) {
+    if (result.success) {
+      // Reload the client list
+      if (onClienteUpdated) {
+        onClienteUpdated()
+      }
+    } else {
       alert(result.error)
     }
   }

@@ -62,9 +62,16 @@ export default async function AppuntamentiPage({
             appuntamenti={appuntamenti || []}
             operatori={operatori || []}
             weekData={weekData}
+            clienti={clienti || []}
+            servizi={servizi || []}
           />
         ) : (
-          <AppuntamentiAgenda appuntamenti={appuntamenti || []} />
+          <AppuntamentiAgenda
+            appuntamenti={appuntamenti || []}
+            clienti={clienti || []}
+            operatori={operatori || []}
+            servizi={servizi || []}
+          />
         )}
       </div>
     </div>

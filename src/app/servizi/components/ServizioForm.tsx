@@ -4,7 +4,11 @@ import { useState } from 'react'
 import { createServizio } from '@/app/actions/servizi'
 import { useRouter } from 'next/navigation'
 
-export default function ServizioForm() {
+type ServizioFormProps = {
+  onServizioCreated?: () => void
+}
+
+export default function ServizioForm({ onServizioCreated }: ServizioFormProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -27,10 +31,14 @@ export default function ServizioForm() {
     setLoading(false)
 
     if (result.success) {
-      console.log('✅ Servizio creato con successo!')
+      // Reload services list FIRST, before closing the form
+      if (onServizioCreated) {
+        await onServizioCreated()
+      }
+
+      // Then close the form and reset
       setIsOpen(false)
       e.currentTarget.reset()
-      router.refresh()
     } else {
       console.error('❌ Errore creazione:', result.error)
       alert(result.error)

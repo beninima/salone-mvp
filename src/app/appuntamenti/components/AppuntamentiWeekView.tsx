@@ -3,13 +3,26 @@
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { deleteAppuntamento, updateAppuntamentoStato } from '@/app/actions/appuntamenti'
-import ServicesMultiSelect from './ServicesMultiSelect'
+import AppuntamentoEditForm from './AppuntamentoEditForm'
+
+type Cliente = {
+  id: number
+  nome: string
+  cognome: string
+}
 
 type Operatore = {
   id: string
   nome: string
   cognome: string
   colore: string | null
+}
+
+type Servizio = {
+  id: string
+  nome: string
+  prezzo: number
+  durata: number
 }
 
 type Appuntamento = {
@@ -42,14 +55,19 @@ type WeekData = {
 export default function AppuntamentiWeekView({
   appuntamenti,
   operatori,
-  weekData
+  weekData,
+  clienti,
+  servizi
 }: {
   appuntamenti: Appuntamento[]
   operatori: Operatore[]
   weekData: WeekData
+  clienti: Cliente[]
+  servizi: Servizio[]
 }) {
   const [selectedApp, setSelectedApp] = useState<Appuntamento | null>(null)
   const [actioningId, setActioningId] = useState<number | null>(null)
+  const [editingId, setEditingId] = useState<number | null>(null)
   const router = useRouter()
 
   // Helper per date key locale (senza timezone shift)
@@ -292,14 +310,8 @@ export default function AppuntamentiWeekView({
 
       {/* Modal dettaglio appuntamento */}
       {selectedApp && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-6"
-          onClick={() => setSelectedApp(null)}
-        >
-          <div
-            className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
+          <div className="p-6">
             <h3 className="text-lg font-bold mb-3">Dettaglio Appuntamento</h3>
 
             <div className="space-y-2 mb-4">
@@ -346,14 +358,15 @@ export default function AppuntamentiWeekView({
             {/* Azioni */}
             <div className="space-y-3">
               <div className="flex gap-2 items-center flex-wrap">
-                <ServicesMultiSelect
-                  appuntamentoId={selectedApp.id}
-                  currentServices={selectedApp.servizi}
-                  onSuccess={() => {
+                <button
+                  onClick={() => {
+                    setEditingId(selectedApp.id)
                     setSelectedApp(null)
-                    router.refresh()
                   }}
-                />
+                  className="px-3 py-1.5 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700"
+                >
+                  ✏ Modifica
+                </button>
 
                 <button
                   onClick={() => router.push(`/clienti/${selectedApp.cliente.id}`)}
@@ -410,6 +423,33 @@ export default function AppuntamentiWeekView({
           </div>
         </div>
       )}
+
+      {/* Edit Modal */}
+      {editingId !== null && (() => {
+        const appToEdit = appuntamenti.find(a => a.id === editingId)
+        if (!appToEdit) return null
+
+        return (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-6"
+            onClick={() => setEditingId(null)}
+          >
+            <div
+              className="bg-white rounded-lg shadow-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <AppuntamentoEditForm
+                appuntamento={appToEdit}
+                clienti={clienti}
+                operatori={operatori}
+                servizi={servizi}
+                onCancel={() => setEditingId(null)}
+                onSuccess={() => setEditingId(null)}
+              />
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }

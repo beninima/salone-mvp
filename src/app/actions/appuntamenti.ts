@@ -109,10 +109,10 @@ export async function createAppuntamento(formData: FormData) {
     const operatoreId = formData.get('operatoreId') as string
     const data = formData.get('data') as string
     const ora = formData.get('ora') as string
-    const servizioId = formData.get('servizio') as string // Ora è l'ID del servizio
+    const serviziIds = formData.getAll('servizi') as string[] // Get all selected services
     const durata = parseInt(formData.get('durata') as string)
 
-    if (!clienteId || !operatoreId || !data || !ora || !servizioId || !durata) {
+    if (!clienteId || !operatoreId || !data || !ora || serviziIds.length === 0 || !durata) {
       return { success: false, error: 'Tutti i campi sono obbligatori' }
     }
 
@@ -124,7 +124,7 @@ export async function createAppuntamento(formData: FormData) {
       return { success: false, error: overlap.conflictDetails || 'L\'operatore ha già un appuntamento in questo orario' }
     }
 
-    // Crea l'appuntamento con la relazione al servizio
+    // Create appointment with multiple services
     await prisma.appuntamento.create({
       data: {
         clienteId,
@@ -133,10 +133,10 @@ export async function createAppuntamento(formData: FormData) {
         durata,
         stato: 'confermato',
         servizi: {
-          create: {
+          create: serviziIds.map((servizioId, index) => ({
             servizioId,
-            ordine: 1
-          }
+            ordine: index + 1
+          }))
         }
       }
     })
@@ -146,6 +146,53 @@ export async function createAppuntamento(formData: FormData) {
   } catch (error) {
     console.error('Errore createAppuntamento:', error)
     return { success: false, error: 'Errore nella creazione dell\'appuntamento' }
+  }
+}
+
+export async function updateAppuntamento(id: number, formData: FormData) {
+  try {
+    const clienteId = parseInt(formData.get('clienteId') as string)
+    const operatoreId = formData.get('operatoreId') as string
+    const data = formData.get('data') as string
+    const ora = formData.get('ora') as string
+    const serviziIds = formData.getAll('servizi') as string[]
+    const durata = parseInt(formData.get('durata') as string)
+
+    if (!clienteId || !operatoreId || !data || !ora || serviziIds.length === 0 || !durata) {
+      return { success: false, error: 'Tutti i campi sono obbligatori' }
+    }
+
+    const dataOra = new Date(`${data}T${ora}`)
+
+    // Check for overlapping appointments (excluding current appointment)
+    const overlap = await hasOverlappingAppointment(operatoreId, dataOra, durata, id)
+    if (overlap.hasConflict) {
+      return { success: false, error: overlap.conflictDetails || 'L\'operatore ha già un appuntamento in questo orario' }
+    }
+
+    // Update appointment: delete old services and create new ones
+    await prisma.appuntamento.update({
+      where: { id },
+      data: {
+        clienteId,
+        operatoreId,
+        dataOra,
+        durata,
+        servizi: {
+          deleteMany: {}, // Remove all existing services
+          create: serviziIds.map((servizioId, index) => ({
+            servizioId,
+            ordine: index + 1
+          }))
+        }
+      }
+    })
+
+    revalidatePath('/appuntamenti')
+    return { success: true }
+  } catch (error) {
+    console.error('Errore updateAppuntamento:', error)
+    return { success: false, error: 'Errore nell\'aggiornamento dell\'appuntamento' }
   }
 }
 

@@ -37,7 +37,6 @@ export default function OperatoriPage() {
     const result = await toggleOperatoreAttivo(id, !attivo)
     if (result.success) {
       await loadOperatori()
-      router.refresh()
     } else {
       alert(result.error)
     }
@@ -49,7 +48,6 @@ export default function OperatoriPage() {
     const result = await deleteOperatore(id)
     if (result.success) {
       await loadOperatori()
-      router.refresh()
     } else {
       alert(result.error)
     }
@@ -73,7 +71,7 @@ export default function OperatoriPage() {
       {/* Content */}
       <div className="px-4 py-4 space-y-4">
         {/* Form per nuovo operatore */}
-        <OperatoreForm />
+        <OperatoreForm onOperatoreCreated={loadOperatori} />
 
         {/* Lista operatori attivi */}
         {loading ? (
@@ -94,7 +92,6 @@ export default function OperatoriPage() {
                         onSuccess={() => {
                           setEditingOperatore(null)
                           loadOperatori()
-                          router.refresh()
                         }}
                       />
                     ) : (

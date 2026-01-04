@@ -2,10 +2,17 @@
 
 import { useState } from 'react'
 import { createCliente } from '@/app/actions/clienti'
+import { useRouter } from 'next/navigation'
 
-export default function ClienteForm() {
+type ClienteFormProps = {
+  returnTo?: string
+  onClienteCreated?: () => void
+}
+
+export default function ClienteForm({ returnTo, onClienteCreated }: ClienteFormProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -17,8 +24,21 @@ export default function ClienteForm() {
     setLoading(false)
 
     if (result.success) {
+      // Reload clients list FIRST, before closing the form
+      if (onClienteCreated) {
+        await onClienteCreated()
+      }
+
+      // Then close the form and reset
       setIsOpen(false)
       e.currentTarget.reset()
+
+      // If returnTo is provided, redirect there after a short delay
+      if (returnTo) {
+        setTimeout(() => {
+          router.push(returnTo)
+        }, 100)
+      }
     } else {
       alert(result.error)
     }
@@ -42,11 +62,11 @@ export default function ClienteForm() {
       <form onSubmit={handleSubmit} className="space-y-3">
         <div>
           <label className="block text-base font-medium text-gray-700 mb-1">
-            Nome *
+            Cognome *
           </label>
           <input
             type="text"
-            name="nome"
+            name="cognome"
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
@@ -54,11 +74,11 @@ export default function ClienteForm() {
 
         <div>
           <label className="block text-base font-medium text-gray-700 mb-1">
-            Cognome *
+            Nome *
           </label>
           <input
             type="text"
-            name="cognome"
+            name="nome"
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />

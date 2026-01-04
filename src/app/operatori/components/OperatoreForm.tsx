@@ -17,7 +17,11 @@ const COLORI_PREIMPOSTATI = [
   '#85C1E9', // Sky Blue
 ]
 
-export default function OperatoreForm() {
+type OperatoreFormProps = {
+  onOperatoreCreated?: () => void
+}
+
+export default function OperatoreForm({ onOperatoreCreated }: OperatoreFormProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [coloreSelezionato, setColoreSelezionato] = useState(COLORI_PREIMPOSTATI[0])
@@ -42,11 +46,15 @@ export default function OperatoreForm() {
     setLoading(false)
 
     if (result.success) {
-      console.log('✅ Operatore creato con successo!')
+      // Reload operators list FIRST, before closing the form
+      if (onOperatoreCreated) {
+        await onOperatoreCreated()
+      }
+
+      // Then close the form and reset
       setIsOpen(false)
       e.currentTarget.reset()
       setColoreSelezionato(COLORI_PREIMPOSTATI[0])
-      router.refresh()
     } else {
       console.error('❌ Errore creazione:', result.error)
       alert(result.error)
